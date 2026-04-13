@@ -8,6 +8,12 @@
 }
 
 body {
-  @apply bg-stone-50 text-stone-900 dark:bg-stone-950 dark:text-stone-100;
+  background-color: #e8e4e0;
+  color: #3a3a3a;
   font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
+}
+
+.dark body {
+  background-color: #3d3425;
+  color: #d4c9a8;
 }
