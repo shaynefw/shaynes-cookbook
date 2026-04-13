@@ -138,9 +138,9 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
         <button
           onClick={resetAll}
           className="mt-4 inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg
-            border border-stone-300 dark:border-stone-600
+            border border-red-400 dark:border-red-500
             text-stone-600 dark:text-stone-300
-            hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
+            hover:bg-red-50 dark:hover:bg-red-950 transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
