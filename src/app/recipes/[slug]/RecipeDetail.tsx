@@ -181,7 +181,7 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
               clipRule="evenodd"
             />
           </svg>
-          Reset all checkmarks
+          Make this again! Reset checkmarks
         </button>
       )}
 
