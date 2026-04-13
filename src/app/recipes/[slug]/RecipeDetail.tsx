@@ -4,6 +4,27 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Recipe } from "@/data/recipes";
 
+function storageKey(slug: string, variation: number, type: "ing" | "steps") {
+  return `recipe-${slug}-v${variation}-${type}`;
+}
+
+function loadChecked(slug: string, variation: number, type: "ing" | "steps", length: number): boolean[] {
+  try {
+    const raw = localStorage.getItem(storageKey(slug, variation, type));
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length === length) return parsed;
+    }
+  } catch { /* ignore */ }
+  return new Array(length).fill(false);
+}
+
+function saveChecked(slug: string, variation: number, type: "ing" | "steps", value: boolean[]) {
+  try {
+    localStorage.setItem(storageKey(slug, variation, type), JSON.stringify(value));
+  } catch { /* ignore */ }
+}
+
 export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
   const hasVariations = recipe.variations && recipe.variations.length > 0;
   const [selectedVariation, setSelectedVariation] = useState(-1); // -1 = main recipe
@@ -18,17 +39,17 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
       : recipe.steps;
 
   const [checkedIngredients, setCheckedIngredients] = useState<boolean[]>(
-    () => new Array(activeIngredients.length).fill(false)
+    () => loadChecked(recipe.slug, -1, "ing", recipe.ingredients.length)
   );
   const [checkedSteps, setCheckedSteps] = useState<boolean[]>(
-    () => new Array(activeSteps.length).fill(false)
+    () => loadChecked(recipe.slug, -1, "steps", recipe.steps.length)
   );
 
-  // Reset checkboxes when variation changes
+  // Load from localStorage when variation changes
   useEffect(() => {
-    setCheckedIngredients(new Array(activeIngredients.length).fill(false));
-    setCheckedSteps(new Array(activeSteps.length).fill(false));
-  }, [selectedVariation, activeIngredients.length, activeSteps.length]);
+    setCheckedIngredients(loadChecked(recipe.slug, selectedVariation, "ing", activeIngredients.length));
+    setCheckedSteps(loadChecked(recipe.slug, selectedVariation, "steps", activeSteps.length));
+  }, [selectedVariation, recipe.slug, activeIngredients.length, activeSteps.length]);
 
   // Screen Wake Lock — keep screen on while viewing recipe
   useEffect(() => {
@@ -63,6 +84,7 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
     setCheckedIngredients((prev) => {
       const next = [...prev];
       next[i] = !next[i];
+      saveChecked(recipe.slug, selectedVariation, "ing", next);
       return next;
     });
   }
@@ -71,6 +93,7 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
     setCheckedSteps((prev) => {
       const next = [...prev];
       next[i] = !next[i];
+      saveChecked(recipe.slug, selectedVariation, "steps", next);
       return next;
     });
   }
@@ -79,8 +102,12 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
     checkedIngredients.some(Boolean) || checkedSteps.some(Boolean);
 
   function resetAll() {
-    setCheckedIngredients(new Array(activeIngredients.length).fill(false));
-    setCheckedSteps(new Array(activeSteps.length).fill(false));
+    const emptyIng = new Array(activeIngredients.length).fill(false);
+    const emptySteps = new Array(activeSteps.length).fill(false);
+    setCheckedIngredients(emptyIng);
+    setCheckedSteps(emptySteps);
+    saveChecked(recipe.slug, selectedVariation, "ing", emptyIng);
+    saveChecked(recipe.slug, selectedVariation, "steps", emptySteps);
   }
 
   const completedSteps = checkedSteps.filter(Boolean).length;
