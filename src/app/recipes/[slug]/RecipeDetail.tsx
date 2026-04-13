@@ -75,6 +75,14 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
     });
   }
 
+  const hasAnyChecked =
+    checkedIngredients.some(Boolean) || checkedSteps.some(Boolean);
+
+  function resetAll() {
+    setCheckedIngredients(new Array(activeIngredients.length).fill(false));
+    setCheckedSteps(new Array(activeSteps.length).fill(false));
+  }
+
   const completedSteps = checkedSteps.filter(Boolean).length;
   const activeVariation =
     selectedVariation >= 0 && recipe.variations
@@ -124,6 +132,29 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
           </span>
         ))}
       </div>
+
+      {/* Reset button */}
+      {hasAnyChecked && (
+        <button
+          onClick={resetAll}
+          className="mt-4 inline-flex items-center gap-1.5 text-sm text-stone-500 dark:text-stone-400
+            hover:text-stone-800 dark:hover:text-stone-200 transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            className="w-4 h-4"
+          >
+            <path
+              fillRule="evenodd"
+              d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H4.598a.75.75 0 00-.75.75v3.634a.75.75 0 001.5 0v-2.033l.312.311a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm-10.624-2.85a5.5 5.5 0 019.201-2.465l.312.31H11.77a.75.75 0 000 1.5h3.634a.75.75 0 00.75-.75V3.535a.75.75 0 00-1.5 0v2.033l-.312-.31A7 7 0 002.63 8.384a.75.75 0 001.449.39z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Reset all checkmarks
+        </button>
+      )}
 
       {/* Portion size switcher */}
       {hasVariations && (

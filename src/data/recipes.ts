@@ -21,8 +21,8 @@ export interface Recipe {
 
 const recipes: Recipe[] = [
   {
-    slug: "honey-walnut-banana-bread",
-    title: "Honey Walnut Banana Bread",
+    slug: "maple-walnut-banana-bread",
+    title: "Maple Walnut Banana Bread",
     description:
       "A moist and flavorful banana bread made with honey or maple syrup instead of refined sugar, packed with rum-soaked raisins and topped with walnuts. Perfect for breakfast or afternoon tea.",
     prepTime: "20 min",
