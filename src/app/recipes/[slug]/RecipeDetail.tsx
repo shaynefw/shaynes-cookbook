@@ -137,8 +137,10 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
       {hasAnyChecked && (
         <button
           onClick={resetAll}
-          className="mt-4 inline-flex items-center gap-1.5 text-sm text-stone-500 dark:text-stone-400
-            hover:text-stone-800 dark:hover:text-stone-200 transition-colors"
+          className="mt-4 inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg
+            border border-stone-300 dark:border-stone-600
+            text-stone-600 dark:text-stone-300
+            hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
