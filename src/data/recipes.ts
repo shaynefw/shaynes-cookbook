@@ -164,6 +164,33 @@ const recipes: Recipe[] = [
       },
     ],
   },
+  {
+    slug: "ginger-snake-tea",
+    title: "Ginger Snake Tea",
+    description:
+      "A fiery, electrolyte-packed ginger tea designed to keep you hydrated all day. Brewed with fresh ginger, potassium, and pink salt — makes a full 2-liter thermos.",
+    prepTime: "5 min",
+    cookTime: "15 min",
+    servings: "2 liters (one full day's supply)",
+    tags: ["drink", "hydration", "wellness"],
+    ingredients: [
+      "2.2 liters water (extra 200 ml accounts for evaporation during boiling)",
+      "2–3 inch piece fresh ginger root",
+      "1 tsp NoSalt (sodium-free salt, for potassium)",
+      "½ tsp Himalayan pink salt",
+      "1 tbsp fresh lemon juice (optional)",
+    ],
+    steps: [
+      "Take your 2–3 inch piece of fresh ginger. Wash it (no need to peel). Slice it into thin coins to maximize surface area.",
+      "Pour the water into a pot and add the ginger slices.",
+      "Bring to a boil, then reduce heat and simmer for 15 minutes. Simmer longer if you want a stronger, spicier kick.",
+      "Turn off the heat. While the water is still hot, add 1 tsp NoSalt and ½ tsp pink salt.",
+      "Stir until completely dissolved — the salts will melt instantly in the hot liquid.",
+      "Strain out the ginger slices (or leave them in if you like strong flavor).",
+      "Add the optional 1 tbsp lemon juice.",
+      "Pour into your 2-liter thermos or jug.",
+    ],
+  },
 ];
 
 export function getAllRecipes(): Recipe[] {
