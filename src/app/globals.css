@@ -17,3 +17,32 @@ body {
   background-color: #3d3425;
   color: #d4c9a8;
 }
+
+/* Text size presets — applied to <html> */
+.size-sm main {
+  font-size: 1rem;
+}
+.size-sm main input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.size-md main {
+  font-size: 1.15rem;
+}
+.size-md main input[type="checkbox"] {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.size-md main h1 { font-size: 1.75rem; }
+.size-md main h2 { font-size: 1.35rem; }
+
+.size-lg main {
+  font-size: 1.35rem;
+}
+.size-lg main input[type="checkbox"] {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+.size-lg main h1 { font-size: 2rem; }
+.size-lg main h2 { font-size: 1.5rem; }

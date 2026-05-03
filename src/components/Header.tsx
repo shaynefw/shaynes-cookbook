@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
+import TextSizeToggle from "./TextSizeToggle";
 
 export default function Header() {
   return (
@@ -11,7 +12,10 @@ export default function Header() {
         >
           Shayne's Cookbook
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-1">
+          <TextSizeToggle />
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
