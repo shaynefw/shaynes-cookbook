@@ -273,7 +273,7 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
                     text-amber-600 focus:ring-amber-500 focus:ring-offset-0 shrink-0"
                 />
                 <div className="flex gap-2">
-                  <span className="font-medium text-stone-400 dark:text-stone-600 shrink-0">
+                  <span className="font-semibold text-amber-700 dark:text-amber-400 shrink-0">
                     {i + 1}.
                   </span>
                   <span
