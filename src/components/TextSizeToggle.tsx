@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-const sizes = ["size-sm", "size-md", "size-lg"] as const;
-const labels = ["A", "A", "A"];
-const tooltips = ["Small", "Medium", "Large"];
+const sizes = ["size-sm", "size-md", "size-lg", "size-xl", "size-xxl"] as const;
+const tooltips = ["Small", "Medium", "Large", "X-Large", "XX-Large"];
 
 export default function TextSizeToggle() {
   const [sizeIndex, setSizeIndex] = useState(0);
@@ -40,10 +39,10 @@ export default function TextSizeToggle() {
         font-semibold select-none"
     >
       <span className={
-        sizeIndex === 0 ? "text-xs" : sizeIndex === 1 ? "text-sm" : "text-base"
+        ["text-xs", "text-xs", "text-sm", "text-sm", "text-base"][sizeIndex]
       }>A</span>
       <span className={
-        sizeIndex === 0 ? "text-sm" : sizeIndex === 1 ? "text-base" : "text-lg"
+        ["text-sm", "text-base", "text-lg", "text-xl", "text-2xl"][sizeIndex]
       }>A</span>
     </button>
   );

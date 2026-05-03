@@ -46,3 +46,23 @@ body {
 }
 .size-lg main h1 { font-size: 2rem; }
 .size-lg main h2 { font-size: 1.5rem; }
+
+.size-xl main {
+  font-size: 1.55rem;
+}
+.size-xl main input[type="checkbox"] {
+  width: 2rem;
+  height: 2rem;
+}
+.size-xl main h1 { font-size: 2.25rem; }
+.size-xl main h2 { font-size: 1.65rem; }
+
+.size-xxl main {
+  font-size: 1.75rem;
+}
+.size-xxl main input[type="checkbox"] {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+.size-xxl main h1 { font-size: 2.5rem; }
+.size-xxl main h2 { font-size: 1.8rem; }
