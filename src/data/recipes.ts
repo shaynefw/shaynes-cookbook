@@ -191,6 +191,53 @@ const recipes: Recipe[] = [
       "Pour into your 2-liter thermos or jug.",
     ],
   },
+  {
+    slug: "whittles-pepper-sauce",
+    title: "Whittle's Pepper Sauce",
+    description:
+      "A fiery Caribbean-style pepper sauce with Scotch Bonnets, garlic, mustard, and fresh cilantro standing in for chadon beni. Blend it smooth or leave it chunky — either way, it brings the heat.",
+    prepTime: "10 min",
+    cookTime: "5 min",
+    servings: "1 bottle",
+    tags: ["sauce", "spicy", "caribbean"],
+    ingredients: [
+      "1 lb Scotch Bonnet peppers, stems removed",
+      "1 cup white vinegar",
+      "2 tbsp yellow prepared mustard (or 1 tbsp dry mustard powder)",
+      "6–8 garlic cloves, roughly chopped",
+      "1½ tbsp fine sea salt",
+      "2 tbsp fresh cilantro leaves, lightly packed and chopped (standing in for chadon beni)",
+    ],
+    steps: [
+      "Remove stems from the peppers. For a milder sauce, remove some or all of the seeds.",
+      "Combine all ingredients in a blender or food processor.",
+      "Blend until smooth (or pulse for a chunkier texture).",
+      "Taste and adjust salt or vinegar to your preference.",
+      "Transfer to a clean bottle or jar. Store in the fridge — it keeps for weeks.",
+    ],
+    variations: [
+      {
+        name: "Half Batch",
+        description: "For ½ lb of Scotch Bonnet peppers.",
+        yield: "1 small bottle",
+        ingredients: [
+          "½ lb Scotch Bonnet peppers, stems removed",
+          "½ cup white vinegar",
+          "1 tbsp yellow prepared mustard (or 1½ tsp dry mustard powder)",
+          "3–4 garlic cloves, chopped",
+          "2–2¼ tsp fine sea salt",
+          "1 tbsp fresh cilantro leaves, lightly packed and chopped",
+        ],
+        steps: [
+          "Remove stems from the peppers. For a milder sauce, remove some or all of the seeds.",
+          "Combine all ingredients in a blender or food processor.",
+          "Blend until smooth (or pulse for a chunkier texture).",
+          "Taste and adjust salt or vinegar to your preference.",
+          "Transfer to a clean bottle or jar. Store in the fridge — it keeps for weeks.",
+        ],
+      },
+    ],
+  },
 ];
 
 export function getAllRecipes(): Recipe[] {
