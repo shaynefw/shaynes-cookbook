@@ -238,6 +238,32 @@ const recipes: Recipe[] = [
       },
     ],
   },
+  {
+    slug: "jerk-chicken-dry-rub",
+    title: "Jerk Chicken Dry Rub",
+    description:
+      "A warm, fragrant dry rub built around pimento (allspice) and a whisper of cinnamon — the backbone of Jamaican jerk flavor. Measured for 1 lb of chicken.",
+    prepTime: "5 min",
+    cookTime: "—",
+    servings: "Seasoning for 1 lb of chicken",
+    tags: ["seasoning", "rub", "caribbean", "spicy"],
+    ingredients: [
+      "1¼ tsp salt",
+      "¾ tsp garlic powder",
+      "⅜ tsp coriander",
+      "¼ tsp black pepper",
+      "⅛ tsp red pepper flakes",
+      "⅛ tsp crushed pimento (allspice)",
+      "⅛ tsp cinnamon",
+    ],
+    steps: [
+      "Combine all spices in a small bowl and whisk until evenly blended.",
+      "Pat the chicken dry with paper towels — dry skin grips the rub and crisps better.",
+      "Sprinkle the rub over all sides of the chicken, pressing it in so it sticks.",
+      "Let the chicken rest at least 30 minutes at room temperature, or cover and refrigerate up to overnight for deeper flavor.",
+      "Cook as desired: grill, bake, or pan-sear until internal temp reaches 165°F.",
+    ],
+  },
 ];
 
 export function getAllRecipes(): Recipe[] {
