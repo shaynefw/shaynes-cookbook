@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import type { CalculatorConfig } from "@/data/recipes";
+import { Fragment, useState } from "react";
+import type {
+  CalculatorConfig,
+  CalculatorSection,
+} from "@/data/recipes";
 
 const FRAC_MAP: Record<number, string> = {
   1: "1/8",
@@ -40,6 +43,13 @@ function formatInputNumber(n: number): string {
   return String(Number(n.toFixed(2)));
 }
 
+function nameForSummary(name: string): string {
+  if (!name) return name;
+  return name.charAt(0).toLowerCase() + name.slice(1);
+}
+
+type Row = { name: string; tsp: number; section?: string };
+
 export default function RecipeCalculator({
   config,
 }: {
@@ -50,20 +60,39 @@ export default function RecipeCalculator({
   const amount = Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
   const showResults = amount > 0;
 
-  const rows = config.ingredients.map((ing) => ({
+  const rows: Row[] = config.ingredients.map((ing) => ({
     name: ing.name,
     tsp: ing.perUnit * amount,
+    section: ing.section,
   }));
 
+  const groups: Array<{ section: CalculatorSection | null; rows: Row[] }> =
+    config.sections && config.sections.length > 0
+      ? config.sections
+          .map((s) => ({
+            section: s,
+            rows: rows.filter((r) => r.section === s.key),
+          }))
+          .filter((g) => g.rows.length > 0)
+      : [{ section: null, rows }];
+
   const unitWord = amount === 1 ? config.unitSingular : config.unitPlural;
+  const suffix = config.summarySuffix ? ` ${config.summarySuffix}` : "";
+
   const summary = showResults
-    ? `For ${formatInputNumber(amount)} ${unitWord}${
-        config.summarySuffix ? ` ${config.summarySuffix}` : ""
-      }, use ` +
-      rows
-        .map((r) => `${formatTsp(r.tsp)} ${r.name.toLowerCase()}`)
-        .join(", ") +
-      "."
+    ? groups
+        .map((g, i) => {
+          const list = g.rows
+            .map((r) => `${formatTsp(r.tsp)} ${nameForSummary(r.name)}`)
+            .join(", ");
+          if (i === 0) {
+            const lead = g.section?.summaryPrefix ?? "use";
+            return `For ${formatInputNumber(amount)} ${unitWord}${suffix}, ${lead} ${list}.`;
+          }
+          const prefix = g.section?.summaryPrefix ?? "Then add";
+          return `${prefix} ${list}.`;
+        })
+        .join(" ")
     : "";
 
   return (
@@ -111,34 +140,55 @@ export default function RecipeCalculator({
         </button>
       </div>
 
-      <ul
-        className="mt-5 divide-y divide-stone-200 dark:divide-stone-800"
-        aria-live="polite"
-      >
-        {rows.map((r) => {
-          const tbsp = showResults ? formatTbspBreakdown(r.tsp) : null;
-          return (
-            <li
-              key={r.name}
-              className="py-2.5 flex items-baseline justify-between gap-3"
-            >
-              <span className="text-stone-700 dark:text-stone-300">
-                {r.name}
-              </span>
-              <span className="text-right">
-                <span className="font-medium tabular-nums">
-                  {showResults ? formatTsp(r.tsp) : "—"}
-                </span>
-                {tbsp && (
-                  <span className="block text-xs text-stone-500 dark:text-stone-400 tabular-nums">
-                    = {tbsp}
-                  </span>
+      <div className="mt-5" aria-live="polite">
+        {groups.map((g, i) => (
+          <Fragment key={g.section?.key ?? "_default"}>
+            {g.section && (
+              <div
+                className={
+                  i > 0
+                    ? "mt-5 pt-5 border-t border-stone-200 dark:border-stone-800"
+                    : ""
+                }
+              >
+                <h3 className="text-sm font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
+                  {g.section.label}
+                </h3>
+                {g.section.caption && (
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 leading-snug">
+                    {g.section.caption}
+                  </p>
                 )}
-              </span>
-            </li>
-          );
-        })}
-      </ul>
+              </div>
+            )}
+            <ul className="mt-2 divide-y divide-stone-200 dark:divide-stone-800">
+              {g.rows.map((r) => {
+                const tbsp = showResults ? formatTbspBreakdown(r.tsp) : null;
+                return (
+                  <li
+                    key={r.name}
+                    className="py-2.5 flex items-baseline justify-between gap-3"
+                  >
+                    <span className="text-stone-700 dark:text-stone-300">
+                      {r.name}
+                    </span>
+                    <span className="text-right">
+                      <span className="font-medium tabular-nums">
+                        {showResults ? formatTsp(r.tsp) : "—"}
+                      </span>
+                      {tbsp && (
+                        <span className="block text-xs text-stone-500 dark:text-stone-400 tabular-nums">
+                          = {tbsp}
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </Fragment>
+        ))}
+      </div>
 
       {showResults && (
         <p className="mt-4 text-sm text-stone-600 dark:text-stone-400 leading-relaxed">

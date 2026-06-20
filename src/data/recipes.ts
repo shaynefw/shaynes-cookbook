@@ -9,6 +9,14 @@ export interface RecipeVariation {
 export interface CalculatorIngredient {
   name: string;
   perUnit: number;
+  section?: string;
+}
+
+export interface CalculatorSection {
+  key: string;
+  label: string;
+  caption?: string;
+  summaryPrefix: string;
 }
 
 export interface CalculatorConfig {
@@ -18,6 +26,7 @@ export interface CalculatorConfig {
   defaultValue: number;
   summarySuffix: string;
   ingredients: CalculatorIngredient[];
+  sections?: CalculatorSection[];
 }
 
 export interface Recipe {
@@ -257,7 +266,7 @@ const recipes: Recipe[] = [
     slug: "jerk-chicken-dry-rub",
     title: "Jerk Chicken Dry Rub",
     description:
-      "A warm, fragrant dry rub built around pimento (allspice) and a whisper of cinnamon — the backbone of Jamaican jerk flavor. Measured for 1 lb of chicken.",
+      "A warm, fragrant dry rub built around pimento (allspice) and a whisper of cinnamon — the backbone of Jamaican jerk flavor. Finished with a Grace jerk seasoning wet rub after a 30-minute rest. Measured for 1 lb of chicken.",
     prepTime: "5 min",
     cookTime: "—",
     servings: "Seasoning for 1 lb of chicken",
@@ -270,12 +279,14 @@ const recipes: Recipe[] = [
       "⅛ tsp red pepper flakes",
       "⅛ tsp crushed pimento (allspice)",
       "⅛ tsp cinnamon",
+      "2 tsp Grace jerk seasoning (wet rub — apply after the 30 min rest)",
     ],
     steps: [
-      "Combine all spices in a small bowl and whisk until evenly blended.",
+      "Combine all dry rub spices in a small bowl and whisk until evenly blended.",
       "Pat the chicken dry with paper towels — dry skin grips the rub and crisps better.",
-      "Sprinkle the rub over all sides of the chicken, pressing it in so it sticks.",
-      "Let the chicken rest at least 30 minutes at room temperature, or cover and refrigerate up to overnight for deeper flavor.",
+      "Sprinkle the dry rub over all sides of the chicken, pressing it in so it sticks.",
+      "Let the chicken rest at least 30 minutes at room temperature, or cover and refrigerate up to overnight for deeper flavor. The wet rub goes on AFTER this rest — don't skip it.",
+      "Once rested, rub 2 tsp Grace jerk seasoning evenly over the chicken for a sticky, flavor-packed finish.",
       "Cook as desired: grill, bake, or pan-sear until internal temp reaches 165°F.",
     ],
     calculator: {
@@ -284,14 +295,30 @@ const recipes: Recipe[] = [
       unitPlural: "pounds",
       defaultValue: 1,
       summarySuffix: "of chicken",
+      sections: [
+        {
+          key: "dry",
+          label: "Dry rub",
+          caption: "Combine, then apply to the chicken first.",
+          summaryPrefix: "use",
+        },
+        {
+          key: "wet",
+          label: "Wet rub",
+          caption:
+            "Apply only AFTER the dry rub has rested on the chicken for at least 30 minutes.",
+          summaryPrefix: "After the chicken has rested at least 30 minutes, rub on",
+        },
+      ],
       ingredients: [
-        { name: "Salt", perUnit: 1.25 },
-        { name: "Garlic powder", perUnit: 0.75 },
-        { name: "Coriander", perUnit: 0.375 },
-        { name: "Black pepper", perUnit: 0.25 },
-        { name: "Red pepper flakes", perUnit: 0.125 },
-        { name: "Crushed pimento (allspice)", perUnit: 0.125 },
-        { name: "Cinnamon", perUnit: 0.125 },
+        { name: "Salt", perUnit: 1.25, section: "dry" },
+        { name: "Garlic powder", perUnit: 0.75, section: "dry" },
+        { name: "Coriander", perUnit: 0.375, section: "dry" },
+        { name: "Black pepper", perUnit: 0.25, section: "dry" },
+        { name: "Red pepper flakes", perUnit: 0.125, section: "dry" },
+        { name: "Crushed pimento (allspice)", perUnit: 0.125, section: "dry" },
+        { name: "Cinnamon", perUnit: 0.125, section: "dry" },
+        { name: "Grace jerk seasoning", perUnit: 2, section: "wet" },
       ],
     },
   },
