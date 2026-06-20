@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Recipe } from "@/data/recipes";
+import RecipeCalculator from "@/components/RecipeCalculator";
 
 function storageKey(slug: string, variation: number, type: "ing" | "steps") {
   return `recipe-${slug}-v${variation}-${type}`;
@@ -223,6 +224,9 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
           )}
         </div>
       )}
+
+      {/* Calculator */}
+      {recipe.calculator && <RecipeCalculator config={recipe.calculator} />}
 
       {/* Ingredients */}
       <section className="mt-8">

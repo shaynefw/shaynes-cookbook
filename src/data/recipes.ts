@@ -6,6 +6,20 @@ export interface RecipeVariation {
   steps: string[];
 }
 
+export interface CalculatorIngredient {
+  name: string;
+  perUnit: number;
+}
+
+export interface CalculatorConfig {
+  inputLabel: string;
+  unitSingular: string;
+  unitPlural: string;
+  defaultValue: number;
+  summarySuffix: string;
+  ingredients: CalculatorIngredient[];
+}
+
 export interface Recipe {
   slug: string;
   title: string;
@@ -17,6 +31,7 @@ export interface Recipe {
   ingredients: string[];
   steps: string[];
   variations?: RecipeVariation[];
+  calculator?: CalculatorConfig;
 }
 
 const recipes: Recipe[] = [
@@ -263,6 +278,22 @@ const recipes: Recipe[] = [
       "Let the chicken rest at least 30 minutes at room temperature, or cover and refrigerate up to overnight for deeper flavor.",
       "Cook as desired: grill, bake, or pan-sear until internal temp reaches 165°F.",
     ],
+    calculator: {
+      inputLabel: "Pounds of chicken",
+      unitSingular: "pound",
+      unitPlural: "pounds",
+      defaultValue: 1,
+      summarySuffix: "of chicken",
+      ingredients: [
+        { name: "Salt", perUnit: 1.25 },
+        { name: "Garlic powder", perUnit: 0.75 },
+        { name: "Coriander", perUnit: 0.375 },
+        { name: "Black pepper", perUnit: 0.25 },
+        { name: "Red pepper flakes", perUnit: 0.125 },
+        { name: "Crushed pimento (allspice)", perUnit: 0.125 },
+        { name: "Cinnamon", perUnit: 0.125 },
+      ],
+    },
   },
 ];
 
