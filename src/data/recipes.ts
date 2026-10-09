@@ -62,8 +62,8 @@ const tunaCasseroleScaler: DishScalerConfig = {
   presets: [
     {
       id: "shaynes",
-      label: "Shayne's dish: 12.5″ × 9″ × 2.5″",
-      dims: { shape: "rectangle", length: 12.5, width: 9, depth: 2.5 },
+      label: "Shayne's dish: 12.5″ × 10″ × 2.5″",
+      dims: { shape: "rectangle", length: 12.5, width: 10, depth: 2.5 },
     },
     {
       id: "original",

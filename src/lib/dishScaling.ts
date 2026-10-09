@@ -129,7 +129,8 @@ function quantity(amount: number, unit: IngredientUnit): { text: string; unit: s
         const tbsp = amount * 16;
         return { text: snap(tbsp, QUARTER_FRACTIONS), unit: "tbsp" };
       }
-      return { text: snap(amount, CUP_FRACTIONS), unit: amount <= 1.0625 ? "cup" : "cups" };
+      const text = snap(amount, CUP_FRACTIONS);
+      return { text, unit: isSingular(text) ? "cup" : "cups" };
     }
     case "tbsp":
       return { text: snap(amount, QUARTER_FRACTIONS), unit: "tbsp" };
@@ -137,9 +138,16 @@ function quantity(amount: number, unit: IngredientUnit): { text: string; unit: s
       return { text: snap(amount, EIGHTH_FRACTIONS), unit: "tsp" };
     case "oz":
       return { text: snap(amount, HALF_FRACTIONS), unit: "oz" };
-    case "can":
-      return { text: snap(amount, HALF_FRACTIONS), unit: amount <= 1.25 ? "can" : "cans" };
+    case "can": {
+      const text = snap(amount, HALF_FRACTIONS);
+      return { text, unit: isSingular(text) ? "can" : "cans" };
+    }
   }
+}
+
+/** "1", "½", "¾" read as singular ("1 cup", "¾ cup"); "1½", "2" as plural. */
+function isSingular(text: string): boolean {
+  return text === "1" || /^[⅛¼⅓⅜½⅝⅔¾⅞]$/.test(text);
 }
 
 export function formatIngredient(ing: ScalableIngredient, factor: number): string {

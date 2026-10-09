@@ -75,7 +75,11 @@ export function useDishState(config?: DishScalerConfig): DishState {
       if (!raw) return;
       const saved = JSON.parse(raw) as DishInput;
       const shapeOk = ["rectangle", "round", "oval"].includes(saved.shape);
-      if (shapeOk && typeof saved.length === "string") setInput(saved);
+      if (!shapeOk || typeof saved.length !== "string") return;
+      // A saved preset re-reads the preset's current size, so corrected
+      // preset dimensions reach people who saved an older version.
+      const preset = config.presets.find((p) => p.id === saved.presetId);
+      setInput(preset ? inputFromDims(preset.id, preset.dims) : saved);
     } catch {
       /* ignore */
     }
