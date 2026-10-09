@@ -6,6 +6,7 @@ import { Recipe } from "@/data/recipes";
 import RecipeCalculator from "@/components/RecipeCalculator";
 import DishScaler, { useDishState } from "@/components/DishScaler";
 import ShoppingList from "@/components/ShoppingList";
+import ShareButton from "@/components/ShareButton";
 import {
   isValidDish,
   renderIngredients,
@@ -184,6 +185,11 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
             {tag}
           </span>
         ))}
+      </div>
+
+      {/* Share */}
+      <div className="mt-4">
+        <ShareButton title={recipe.title} />
       </div>
 
       {/* Reset button */}

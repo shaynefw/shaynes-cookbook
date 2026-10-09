@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import { SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -9,8 +10,20 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Shayne's Cookbook",
-  description: "Shayne's personal collection of favorite recipes",
+  metadataBase: new URL(SITE_URL),
+  title: SITE_NAME,
+  description: SITE_TAGLINE,
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description: SITE_TAGLINE,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: SITE_TAGLINE,
+  },
 };
 
 export default function RootLayout({

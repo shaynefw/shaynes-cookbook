@@ -14,9 +14,23 @@ export async function generateMetadata({
   const { slug } = await params;
   const recipe = getRecipeBySlug(slug);
   if (!recipe) return { title: "Recipe not found" };
+  const url = `/recipes/${recipe.slug}`;
   return {
     title: `${recipe.title} — Shayne's Cookbook`,
     description: recipe.description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      siteName: "Shayne's Cookbook",
+      title: recipe.title,
+      description: recipe.description,
+      url,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: recipe.title,
+      description: recipe.description,
+    },
   };
 }
 
