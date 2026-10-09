@@ -148,6 +148,82 @@ const tunaCasseroleScaler: DishScalerConfig = {
   ],
 };
 
+// Reference pan: a 10-inch springform. Its depth isn't stated in the source,
+// so 2.75in (a common springform depth) is assumed.
+const scallopedBakeScaler: DishScalerConfig = {
+  reference: { shape: "round", length: 10, width: 10, depth: 2.75 },
+  referenceServings: 6,
+  headroom: 0.5,
+  defaultPresetId: "shaynes",
+  presets: [
+    {
+      id: "shaynes",
+      label: "Shayne's dish: 12.5″ × 10″ × 2.5″",
+      dims: { shape: "rectangle", length: 12.5, width: 10, depth: 2.5 },
+    },
+    {
+      id: "original",
+      label: "Original: 10″ round springform",
+      dims: { shape: "round", length: 10, width: 10, depth: 2.75 },
+    },
+    {
+      id: "8x8",
+      label: "8″ × 8″ × 2″ square",
+      dims: { shape: "rectangle", length: 8, width: 8, depth: 2 },
+    },
+    {
+      id: "9x9",
+      label: "9″ × 9″ × 2″ square",
+      dims: { shape: "rectangle", length: 9, width: 9, depth: 2 },
+    },
+    {
+      id: "13x9",
+      label: "13″ × 9″ × 2″ rectangle",
+      dims: { shape: "rectangle", length: 13, width: 9, depth: 2 },
+    },
+  ],
+  bakeNotes: {
+    same: "Your layers will be about as deep as the original, so bake about 1½ hours, covered with foil, until the vegetables are tender when poked with a knife.",
+    deeper:
+      "Your layers will be thicker than the original, so it may need 15–30 minutes longer. Check that a knife slides into the middle easily.",
+    shallower:
+      "Your layers will be thinner than the original, so start checking at about 1 hour 15 minutes.",
+  },
+  ingredients: [
+    { amount: 2, unit: "each", name: "medium zucchini", note: "washed", scaleBy: "volume" },
+    {
+      amount: 3,
+      unit: "each",
+      name: "medium potatoes",
+      note: "washed and peeled",
+      scaleBy: "volume",
+    },
+    {
+      amount: 5,
+      unit: "each",
+      name: "medium carrots",
+      note: "washed and peeled",
+      scaleBy: "volume",
+    },
+    { amount: 4, unit: "each", name: "medium eggs", scaleBy: "volume" },
+    { amount: 1 / 3, unit: "cup", name: "butter", note: "melted", scaleBy: "volume" },
+    { amount: 2 / 3, unit: "cup", name: "milk", scaleBy: "volume" },
+    { amount: 0.125, unit: "tsp", name: "nutmeg", scaleBy: "volume" },
+    { amount: 0.5, unit: "tsp", name: "dried basil", scaleBy: "volume" },
+    { amount: 0.5, unit: "tsp", name: "dried thyme", scaleBy: "volume" },
+    { amount: 0, unit: "tsp", name: "", text: "salt, to taste", scaleBy: "volume" },
+    { amount: 0, unit: "tsp", name: "", text: "pepper, to taste", scaleBy: "volume" },
+    { amount: 1, unit: "cup", name: "all-purpose flour", scaleBy: "volume" },
+    {
+      amount: 1.5,
+      unit: "cup",
+      name: "shredded cheddar cheese",
+      note: "for the middle layer",
+      scaleBy: "area",
+    },
+  ],
+};
+
 const baseRecipes: Recipe[] = [
   {
     slug: "maple-walnut-banana-bread",
@@ -458,6 +534,41 @@ const baseRecipes: Recipe[] = [
     source: {
       name: "Dinner in 321 (Laura Ashley Johnson)",
       url: "https://www.dinnerin321.com/old-fashioned-tuna-noodle-casserole/",
+    },
+  },
+  {
+    slug: "scalloped-vegetable-bake",
+    title: "Scalloped Vegetable Bake",
+    description:
+      "Paper-thin zucchini, potato and carrot slices coated in a light herb batter, layered with cheddar and baked until tender. Enter your baking dish size and every amount adjusts to fit.",
+    prepTime: "30 min",
+    cookTime: "1 hr 30 min",
+    servings: "6 in a 10-inch springform pan (scales to your dish)",
+    tags: ["bake", "vegetarian", "dinner", "side dish"],
+    ingredients: renderIngredients(
+      scallopedBakeScaler,
+      scallopedBakeScaler.reference
+    ),
+    steps: [
+      "Preheat the oven to 350°F (180°C). Line your baking dish with parchment paper. The original uses a 10-inch (25 cm) springform pan.",
+      "Slice the zucchini, potatoes and carrots very thinly with a mandoline or a sharp knife. Watch your fingers!",
+      "In a large bowl, whisk the eggs, melted butter and milk together until combined.",
+      "Add the nutmeg, basil, thyme, salt, pepper and flour, and whisk well.",
+      "Add the sliced vegetables to the batter and stir until every slice is well coated.",
+      "Spread half of the vegetable slices in the prepared dish and flatten them with a spoon.",
+      "Sprinkle the cheddar evenly over the vegetables.",
+      "Top with the rest of the vegetables, then cover the dish with aluminum foil.",
+      "Bake for about 1½ hours, until the vegetables are fully cooked and tender (see the baking note above for your dish).",
+      "Let it cool for at least 10 minutes. If you used a springform pan, release the ring, then slice and serve.",
+    ],
+    dishScaler: scallopedBakeScaler,
+    notes: [
+      "Nutrition per serving, from the original recipe: 421 calories, 40 g carbohydrate, 22 g fat, 4 g fiber, 16 g protein, 5 g sugar.",
+      "Portion scaling assumes the original 10-inch springform is about 2¾ inches deep (the source doesn't say), so treat the amounts for other dishes as a close guide.",
+    ],
+    source: {
+      name: "Tasty",
+      url: "https://tasty.co/recipe/scalloped-vegetable-bake",
     },
   },
 ];

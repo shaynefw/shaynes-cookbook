@@ -450,7 +450,7 @@ const tunaCasserole: ShoppingItem[] = [
     name: "Salted butter",
     aisle: "Dairy & eggs",
     buy: "1 package (1 lb / 454 g) or 1 stick",
-    uses: "about ½ stick, melted, for the topping",
+    usesScaled: { needed: [{ amount: 4, scaleBy: "area" }], unit: "tbsp" },
   },
   {
     name: "Frozen peas",
@@ -510,19 +510,150 @@ const tunaCasserole: ShoppingItem[] = [
     name: "Garlic powder",
     aisle: "Spices & seasonings",
     buy: "1 jar",
-    uses: "about 1 tsp, a bit more for bigger dishes",
+    usesScaled: { needed: [{ amount: 1, scaleBy: "volume" }], unit: "tsp" },
   },
   {
     name: "Onion powder",
     aisle: "Spices & seasonings",
     buy: "1 jar",
-    uses: "about 1 tsp, a bit more for bigger dishes",
+    usesScaled: { needed: [{ amount: 1, scaleBy: "volume" }], unit: "tsp" },
   },
   {
     name: "Seasoning salt",
     aisle: "Spices & seasonings",
     buy: "1 container, or use plain salt plus pepper instead",
-    uses: "about 1 tsp",
+    usesScaled: { needed: [{ amount: 1, scaleBy: "volume" }], unit: "tsp" },
+  },
+];
+
+const scallopedBake: ShoppingItem[] = [
+  {
+    name: "Zucchini",
+    aisle: "Produce",
+    pack: {
+      label: "medium zucchini",
+      plural: "medium zucchini",
+      size: 1,
+      unit: "each",
+      needed: [{ amount: 2, scaleBy: "volume" }],
+    },
+  },
+  {
+    name: "Potatoes",
+    aisle: "Produce",
+    pack: {
+      label: "medium potato",
+      plural: "medium potatoes",
+      size: 1,
+      unit: "each",
+      needed: [{ amount: 3, scaleBy: "volume" }],
+    },
+    note: "Any all-purpose potato works. You'll peel them.",
+  },
+  {
+    name: "Carrots",
+    aisle: "Produce",
+    pack: {
+      label: "medium carrot",
+      plural: "medium carrots",
+      size: 1,
+      unit: "each",
+      needed: [{ amount: 5, scaleBy: "volume" }],
+    },
+    note: "Or buy a 1–2 lb (500 g–1 kg) bag; you'll peel them.",
+  },
+  {
+    name: "Cheddar cheese",
+    aisle: "Dairy & eggs",
+    pack: {
+      label: "8 oz bag shredded cheddar (about 2 cups)",
+      plural: "8 oz bags shredded cheddar (about 2 cups each)",
+      size: 2,
+      unit: "cup",
+      needed: [{ amount: 1.5, scaleBy: "area" }],
+    },
+    note: "Or buy a block and shred it yourself: about 4 oz per cup.",
+  },
+  {
+    name: "Eggs",
+    aisle: "Dairy & eggs",
+    pack: {
+      label: "carton of 6 or 12 eggs",
+      plural: "cartons of 6 or 12 eggs",
+      size: 12,
+      unit: "each",
+      usesWord: "medium eggs",
+      needed: [{ amount: 4, scaleBy: "volume" }],
+    },
+  },
+  {
+    name: "Milk",
+    aisle: "Dairy & eggs",
+    pack: {
+      label: "pint (2 cup / about 500 mL) carton",
+      plural: "pint (2 cup / about 500 mL) cartons",
+      size: 2,
+      unit: "cup",
+      needed: [{ amount: 2 / 3, scaleBy: "volume" }],
+    },
+  },
+  {
+    name: "Butter",
+    aisle: "Dairy & eggs",
+    buy: "1 package (1 lb / 454 g) or 1 stick",
+    usesScaled: { needed: [{ amount: 1 / 3, scaleBy: "volume" }], unit: "cup" },
+    note: "Melted before using.",
+  },
+  {
+    name: "All-purpose flour",
+    aisle: "Baking",
+    buy: "1 bag (the smallest size is plenty)",
+    usesScaled: { needed: [{ amount: 1, scaleBy: "volume" }], unit: "cup" },
+  },
+  {
+    name: "Ground nutmeg",
+    aisle: "Spices & seasonings",
+    buy: "1 jar",
+    usesScaled: { needed: [{ amount: 0.125, scaleBy: "volume" }], unit: "tsp" },
+  },
+  {
+    name: "Dried basil",
+    aisle: "Spices & seasonings",
+    buy: "1 jar",
+    usesScaled: { needed: [{ amount: 0.5, scaleBy: "volume" }], unit: "tsp" },
+  },
+  {
+    name: "Dried thyme",
+    aisle: "Spices & seasonings",
+    buy: "1 jar",
+    usesScaled: { needed: [{ amount: 0.5, scaleBy: "volume" }], unit: "tsp" },
+  },
+  {
+    name: "Parchment paper",
+    aisle: "Other",
+    buy: "1 roll",
+    uses: "to line the dish",
+  },
+  {
+    name: "Salt",
+    aisle: "Spices & seasonings",
+    buy: "Pantry staple",
+    uses: "to taste",
+    pantry: true,
+  },
+  {
+    name: "Black pepper",
+    aisle: "Spices & seasonings",
+    buy: "Pantry staple",
+    uses: "to taste",
+    pantry: true,
+  },
+  {
+    name: "Aluminum foil",
+    aisle: "Other",
+    buy: "Pantry staple",
+    uses: "to cover the dish",
+    pantry: true,
   },
 ];
 
@@ -533,4 +664,5 @@ export const shoppingLists: Record<string, ShoppingItem[]> = {
   "whittles-pepper-sauce": pepperSauce,
   "jerk-chicken-dry-rub": jerkChicken,
   "old-fashioned-tuna-noodle-casserole": tunaCasserole,
+  "scalloped-vegetable-bake": scallopedBake,
 };

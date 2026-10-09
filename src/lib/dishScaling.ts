@@ -16,7 +16,8 @@ export interface DishPreset {
   dims: DishDims;
 }
 
-export type IngredientUnit = "cup" | "tbsp" | "tsp" | "oz" | "can";
+/** "each" = whole items (eggs, zucchini), shown with no unit word. */
+export type IngredientUnit = "cup" | "tbsp" | "tsp" | "oz" | "can" | "each";
 
 export interface ScalableIngredient {
   /** Amount for the reference dish. */
@@ -28,6 +29,8 @@ export interface ScalableIngredient {
   scaleBy: "volume" | "area";
   /** Optional "about N x <label>" hint, e.g. how many 5 oz cans. */
   alt?: { size: number; label: string };
+  /** A fixed line that never scales, e.g. "salt, to taste". */
+  text?: string;
 }
 
 export interface DishScalerConfig {
@@ -38,6 +41,8 @@ export interface DishScalerConfig {
   presets: DishPreset[];
   defaultPresetId: string;
   ingredients: ScalableIngredient[];
+  /** Recipe-specific bake-time wording; falls back to a generic casserole note. */
+  bakeNotes?: { same: string; deeper: string; shallower: string };
 }
 
 export interface ScaleFactors {
@@ -142,6 +147,8 @@ function quantity(amount: number, unit: IngredientUnit): { text: string; unit: s
       const text = snap(amount, HALF_FRACTIONS);
       return { text, unit: isSingular(text) ? "can" : "cans" };
     }
+    case "each":
+      return { text: String(Math.max(1, Math.round(amount))), unit: "" };
   }
 }
 
@@ -153,12 +160,13 @@ function isSingular(text: string): boolean {
 /** "1⅓ cups", "3 cans": an amount in kitchen-friendly form. */
 export function formatAmount(amount: number, unit: IngredientUnit): string {
   const q = quantity(amount, unit);
-  return `${q.text} ${q.unit}`;
+  return `${q.text} ${q.unit}`.trim();
 }
 
 export function formatIngredient(ing: ScalableIngredient, factor: number): string {
+  if (ing.text !== undefined) return ing.text;
   const q = quantity(ing.amount * factor, ing.unit);
-  let line = `${q.text} ${q.unit} ${ing.name}`;
+  let line = [q.text, q.unit, ing.name].filter(Boolean).join(" ");
   if (ing.note) line += `, ${ing.note}`;
   if (ing.alt) {
     const n = snap((ing.amount * factor) / ing.alt.size, HALF_FRACTIONS);
@@ -186,12 +194,18 @@ export function formatCups(cups: number): string {
 }
 
 /** Bake-time guidance based on how thick the filling layer is vs. the original. */
-export function bakeHint(layer: number): string {
-  if (layer > 1.15) {
-    return "Your filling will be deeper than the original, so expect 30–40 minutes. If the top browns before the middle is bubbling, cover loosely with foil.";
-  }
-  if (layer < 0.85) {
-    return "Your filling will be shallower than the original, so start checking at about 20 minutes.";
-  }
-  return "Your filling will be about the same depth as the original: bake 25–30 minutes.";
+export function bakeHint(
+  layer: number,
+  notes?: { same: string; deeper: string; shallower: string }
+): string {
+  const n = notes ?? {
+    deeper:
+      "Your filling will be deeper than the original, so expect 30–40 minutes. If the top browns before the middle is bubbling, cover loosely with foil.",
+    shallower:
+      "Your filling will be shallower than the original, so start checking at about 20 minutes.",
+    same: "Your filling will be about the same depth as the original: bake 25–30 minutes.",
+  };
+  if (layer > 1.15) return n.deeper;
+  if (layer < 0.85) return n.shallower;
+  return n.same;
 }

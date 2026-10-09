@@ -268,11 +268,14 @@ export default function DishScaler({
               </strong>
               . The filling is scaled ×{f.volume.toFixed(2)} and the toppings ×
               {f.area.toFixed(2)} compared with the original{" "}
-              {config.reference.length}″ × {config.reference.width}″ dish.
+              {config.reference.shape === "round"
+                ? `${config.reference.length}″ round`
+                : `${config.reference.length}″ × ${config.reference.width}″`}{" "}
+              dish.
             </p>
             <p className="mt-2 text-amber-800 dark:text-amber-300 leading-relaxed">
               <strong className="font-semibold">Baking note:</strong>{" "}
-              {bakeHint(f.layer)}
+              {bakeHint(f.layer, config.bakeNotes)}
             </p>
           </>
         ) : (

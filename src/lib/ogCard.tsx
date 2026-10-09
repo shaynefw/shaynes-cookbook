@@ -41,7 +41,10 @@ export function OgCard({
   facts: string[];
   tags: string[];
 }) {
-  const titleSize = title.length > 40 ? 64 : title.length > 26 ? 76 : 92;
+  // Largest title size that keeps it on one line (about 0.55em per character
+  // across ~980px); long titles drop to 64px and wrap onto two lines.
+  const titleSize = Math.min(92, Math.max(64, Math.floor(980 / (title.length * 0.55))));
+  const twoLines = title.length * 0.55 * titleSize > 980;
 
   return (
     <div
@@ -111,8 +114,8 @@ export function OgCard({
         <div
           style={{
             display: "flex",
-            marginTop: 26,
-            fontSize: 32,
+            marginTop: twoLines ? 18 : 26,
+            fontSize: twoLines ? 28 : 32,
             lineHeight: 1.35,
             color: BRAND.text,
             maxWidth: 900,

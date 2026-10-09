@@ -37,6 +37,8 @@ export interface ShoppingPack {
   unit: IngredientUnit;
   /** What the recipe uses at the reference dish size, split by how it scales. */
   needed: { amount: number; scaleBy: "volume" | "area" }[];
+  /** For unit "each": the word to show in "Recipe uses", e.g. "eggs". */
+  usesWord?: string;
 }
 
 export interface ShoppingItem {
@@ -52,6 +54,11 @@ export interface ShoppingItem {
   optional?: boolean;
   /** Count the packs from the scaled amount instead of using `buy`. */
   pack?: ShoppingPack;
+  /** Keep `buy` as written but compute "Recipe uses" from the scaled amount. */
+  usesScaled?: {
+    needed: { amount: number; scaleBy: "volume" | "area" }[];
+    unit: IngredientUnit;
+  };
   /** Different text for a chosen portion size, keyed by the variation's name. */
   variations?: Record<string, { buy?: string; uses?: string }>;
 }
@@ -82,17 +89,32 @@ export function resolveShopping(
     let buy = item.buy ?? "";
     let uses = item.uses;
 
-    if (item.pack) {
-      const f = ctx.factors ?? { volume: 1, area: 1 };
-      const total = item.pack.needed.reduce(
+    const f = ctx.factors ?? { volume: 1, area: 1 };
+    const sumNeeded = (needed: { amount: number; scaleBy: "volume" | "area" }[]) =>
+      needed.reduce(
         (sum, n) => sum + n.amount * (n.scaleBy === "area" ? f.area : f.volume),
         0
       );
-      // Up to 12% over a whole pack still counts as that pack (1.09 cans of
-      // soup reads as "1 can" in the ingredient list, so buy 1, not 2).
-      const count = Math.max(1, Math.ceil(total / item.pack.size - 0.12));
+
+    if (item.pack) {
+      const total = sumNeeded(item.pack.needed);
+      let count: number;
+      if (item.pack.unit === "each") {
+        // Whole items: buy what the ingredient list shows (rounded to whole).
+        count = Math.max(1, Math.ceil(Math.max(1, Math.round(total)) / item.pack.size));
+        uses = item.pack.usesWord
+          ? `${Math.max(1, Math.round(total))} ${item.pack.usesWord}`
+          : undefined;
+      } else {
+        // Up to 12% over a whole pack still counts as that pack (1.09 cans of
+        // soup reads as "1 can" in the ingredient list, so buy 1, not 2).
+        count = Math.max(1, Math.ceil(total / item.pack.size - 0.12));
+        uses =
+          item.pack.unit === "can" ? undefined : formatAmount(total, item.pack.unit);
+      }
       buy = `${count} × ${count === 1 ? item.pack.label : item.pack.plural}`;
-      uses = item.pack.unit === "can" ? undefined : formatAmount(total, item.pack.unit);
+    } else if (item.usesScaled) {
+      uses = formatAmount(sumNeeded(item.usesScaled.needed), item.usesScaled.unit);
     } else if (ctx.variation && item.variations?.[ctx.variation]) {
       const v = item.variations[ctx.variation];
       buy = v.buy ?? buy;
