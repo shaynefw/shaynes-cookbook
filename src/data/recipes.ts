@@ -1,3 +1,11 @@
+import { renderIngredients } from "@/lib/dishScaling";
+import type { DishScalerConfig } from "@/lib/dishScaling";
+
+export interface RecipeSource {
+  name: string;
+  url: string;
+}
+
 export interface RecipeVariation {
   name: string;
   description: string;
@@ -41,7 +49,101 @@ export interface Recipe {
   steps: string[];
   variations?: RecipeVariation[];
   calculator?: CalculatorConfig;
+  dishScaler?: DishScalerConfig;
+  notes?: string[];
+  source?: RecipeSource;
 }
+
+const tunaCasseroleScaler: DishScalerConfig = {
+  reference: { shape: "rectangle", length: 13, width: 9, depth: 2 },
+  referenceServings: 8,
+  headroom: 0.5,
+  defaultPresetId: "shaynes",
+  presets: [
+    {
+      id: "shaynes",
+      label: "Shayne's dish: 12.5″ × 9″ × 2.5″",
+      dims: { shape: "rectangle", length: 12.5, width: 9, depth: 2.5 },
+    },
+    {
+      id: "original",
+      label: "Original: 13″ × 9″ × 2″",
+      dims: { shape: "rectangle", length: 13, width: 9, depth: 2 },
+    },
+    {
+      id: "8x8",
+      label: "8″ × 8″ × 2″ square",
+      dims: { shape: "rectangle", length: 8, width: 8, depth: 2 },
+    },
+    {
+      id: "9x9",
+      label: "9″ × 9″ × 2″ square",
+      dims: { shape: "rectangle", length: 9, width: 9, depth: 2 },
+    },
+    {
+      id: "11x7",
+      label: "11″ × 7″ × 2″ rectangle",
+      dims: { shape: "rectangle", length: 11, width: 7, depth: 2 },
+    },
+  ],
+  ingredients: [
+    { amount: 12, unit: "oz", name: "egg noodles", scaleBy: "volume" },
+    {
+      amount: 2,
+      unit: "can",
+      name: "(10.5 oz each) condensed cream of mushroom soup",
+      note: "regular or low-sodium",
+      scaleBy: "volume",
+    },
+    { amount: 1, unit: "cup", name: "milk", scaleBy: "volume" },
+    { amount: 1, unit: "cup", name: "frozen peas", note: "thawed", scaleBy: "volume" },
+    {
+      amount: 10,
+      unit: "oz",
+      name: "canned tuna",
+      note: "drained and flaked",
+      scaleBy: "volume",
+      alt: { size: 5, label: "5 oz cans" },
+    },
+    {
+      amount: 1.5,
+      unit: "cup",
+      name: "shredded cheddar cheese",
+      note: "to mix into the sauce",
+      scaleBy: "volume",
+    },
+    { amount: 1, unit: "tsp", name: "garlic powder", scaleBy: "volume" },
+    { amount: 1, unit: "tsp", name: "onion powder", scaleBy: "volume" },
+    {
+      amount: 1,
+      unit: "tsp",
+      name: "seasoning salt",
+      note: "or the same amount of salt plus half as much black pepper",
+      scaleBy: "volume",
+    },
+    {
+      amount: 0.5,
+      unit: "cup",
+      name: "shredded cheddar cheese",
+      note: "for the top",
+      scaleBy: "area",
+    },
+    {
+      amount: 1,
+      unit: "cup",
+      name: "buttery round cracker crumbs",
+      note: "for the topping",
+      scaleBy: "area",
+    },
+    {
+      amount: 4,
+      unit: "tbsp",
+      name: "salted butter",
+      note: "melted, for the topping",
+      scaleBy: "area",
+    },
+  ],
+};
 
 const recipes: Recipe[] = [
   {
@@ -320,6 +422,39 @@ const recipes: Recipe[] = [
         { name: "Cinnamon", perUnit: 0.125, section: "dry" },
         { name: "Grace jerk seasoning", perUnit: 2, section: "wet" },
       ],
+    },
+  },
+  {
+    slug: "old-fashioned-tuna-noodle-casserole",
+    title: "Old Fashioned Tuna Noodle Casserole",
+    description:
+      "A creamy, cheesy vintage casserole of egg noodles, tuna and peas in a mushroom-soup sauce, finished with a buttery cracker crumb crust. Enter your baking dish size and every amount adjusts to fit.",
+    prepTime: "15 min",
+    cookTime: "25–30 min",
+    servings: "8 in a 9×13 dish (scales to your dish)",
+    tags: ["casserole", "dinner", "vintage", "comfort food"],
+    ingredients: renderIngredients(
+      tunaCasseroleScaler,
+      tunaCasseroleScaler.reference
+    ),
+    steps: [
+      "Preheat the oven to 375°F. Butter or spray your baking dish with nonstick spray.",
+      "Cook the egg noodles in well-salted water until just al dente (they keep cooking in the oven, so don't overdo it). Drain and set aside.",
+      "In a large bowl, stir the cream of mushroom soup and milk together until smooth. Stir in the peas, flaked tuna, the mixed-in cheddar, garlic powder, onion powder and seasoning salt.",
+      "Add the cooked noodles and stir gently until they are coated and the cheese is starting to melt.",
+      "Pour the mixture into the prepared dish and sprinkle the topping cheddar over the surface.",
+      "In a small bowl, stir the cracker crumbs and melted butter together until evenly moistened, then sprinkle over the cheese.",
+      "Bake until the top is golden brown and the casserole is bubbly (25–30 minutes in the original 9×13 dish; see the baking note above for your dish). Garnish with chopped fresh parsley if you like.",
+    ],
+    dishScaler: tunaCasseroleScaler,
+    notes: [
+      "Make ahead: assemble the casserole without the cracker topping, wrap and refrigerate for up to a day. Add the topping just before baking.",
+      "Storage: refrigerate leftovers in an airtight container for up to 4 days, or freeze for up to 2 months. Let it sit at room temperature for 30 minutes before reheating in the oven.",
+      "Prefer homemade cream of mushroom soup? Dinner in 321 has a from-scratch version on the original recipe page.",
+    ],
+    source: {
+      name: "Dinner in 321 (Laura Ashley Johnson)",
+      url: "https://www.dinnerin321.com/old-fashioned-tuna-noodle-casserole/",
     },
   },
 ];

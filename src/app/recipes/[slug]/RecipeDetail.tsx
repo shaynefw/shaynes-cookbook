@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Recipe } from "@/data/recipes";
 import RecipeCalculator from "@/components/RecipeCalculator";
+import DishScaler, { useDishState } from "@/components/DishScaler";
+import { isValidDish, renderIngredients } from "@/lib/dishScaling";
 
 function storageKey(slug: string, variation: number, type: "ing" | "steps") {
   return `recipe-${slug}-v${variation}-${type}`;
@@ -30,10 +32,17 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
   const hasVariations = recipe.variations && recipe.variations.length > 0;
   const [selectedVariation, setSelectedVariation] = useState(-1); // -1 = main recipe
 
+  const dish = useDishState(recipe.dishScaler);
+  const scaler = recipe.dishScaler;
+  const scaledIngredients =
+    scaler && isValidDish(dish.dims, scaler.headroom)
+      ? renderIngredients(scaler, dish.dims)
+      : null;
+
   const activeIngredients =
     selectedVariation >= 0 && recipe.variations
       ? recipe.variations[selectedVariation].ingredients
-      : recipe.ingredients;
+      : scaledIngredients ?? recipe.ingredients;
   const activeSteps =
     selectedVariation >= 0 && recipe.variations
       ? recipe.variations[selectedVariation].steps
@@ -228,6 +237,9 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
       {/* Calculator */}
       {recipe.calculator && <RecipeCalculator config={recipe.calculator} />}
 
+      {/* Dish size scaler */}
+      {scaler && <DishScaler config={scaler} state={dish} />}
+
       {/* Ingredients */}
       <section className="mt-8">
         <h2 className="text-lg font-semibold mb-3">Ingredients</h2>
@@ -295,6 +307,33 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
           ))}
         </ol>
       </section>
+
+      {/* Notes */}
+      {recipe.notes && recipe.notes.length > 0 && (
+        <section className="mt-8">
+          <h2 className="text-lg font-semibold mb-3">Notes</h2>
+          <ul className="space-y-2 list-disc pl-5 text-stone-700 dark:text-stone-300">
+            {recipe.notes.map((n) => (
+              <li key={n}>{n}</li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {recipe.source && (
+        <p className="mt-8 text-sm text-stone-500 dark:text-stone-400">
+          Adapted from{" "}
+          <a
+            href={recipe.source.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-stone-800 dark:hover:text-stone-200"
+          >
+            {recipe.source.name}
+          </a>
+          .
+        </p>
+      )}
     </div>
   );
 }
