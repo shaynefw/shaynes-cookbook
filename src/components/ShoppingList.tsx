@@ -25,6 +25,7 @@ export default function ShoppingList({
 }) {
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [copied, setCopied] = useState(false);
+  const [open, setOpen] = useState(false);
 
   // Load ticks for this recipe and portion size after mount.
   useEffect(() => {
@@ -110,28 +111,39 @@ export default function ShoppingList({
   }
 
   return (
-    <details className="mt-8 rounded-xl border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/40">
-      <summary className="cursor-pointer list-none px-5 py-4 flex items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
-        <h2 className="text-lg font-semibold flex items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="w-5 h-5 text-amber-600 dark:text-amber-400"
-            aria-hidden="true"
-          >
-            <path d="M1 1.75A.75.75 0 011.75 1h1.628a1.75 1.75 0 011.734 1.51L5.18 3a65.25 65.25 0 0113.36 1.412.75.75 0 01.58.875 48.645 48.645 0 01-1.618 6.2.75.75 0 01-.712.513H6a2.503 2.503 0 00-2.292 1.5H17.25a.75.75 0 010 1.5H2.76a.75.75 0 01-.748-.807 4.002 4.002 0 012.716-3.486L3.626 2.716a.25.25 0 00-.248-.216H1.75A.75.75 0 011 1.75zM6 17.5a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM15.5 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-          </svg>
-          Shopping list
-        </h2>
-        <span className="text-sm text-stone-500 dark:text-stone-400">
-          {doneCount > 0
-            ? `${doneCount}/${toBuy.length} in the cart`
-            : `${toBuy.length} items to buy`}
+    <>
+      {/* Sits in the same button row as Share; the panel opens on its own line below. */}
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls="shopping-list-panel"
+        className="inline-flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-lg
+          border border-amber-600 dark:border-amber-500
+          text-stone-700 dark:text-stone-200
+          hover:bg-amber-50 dark:hover:bg-amber-950 transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          className="w-4 h-4"
+          aria-hidden="true"
+        >
+          <path d="M1 1.75A.75.75 0 011.75 1h1.628a1.75 1.75 0 011.734 1.51L5.18 3a65.25 65.25 0 0113.36 1.412.75.75 0 01.58.875 48.645 48.645 0 01-1.618 6.2.75.75 0 01-.712.513H6a2.503 2.503 0 00-2.292 1.5H17.25a.75.75 0 010 1.5H2.76a.75.75 0 01-.748-.807 4.002 4.002 0 012.716-3.486L3.626 2.716a.25.25 0 00-.248-.216H1.75A.75.75 0 011 1.75zM6 17.5a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM15.5 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+        </svg>
+        Shopping list
+        <span className="text-stone-500 dark:text-stone-400">
+          {doneCount > 0 ? `${doneCount}/${toBuy.length}` : toBuy.length}
         </span>
-      </summary>
+      </button>
 
-      <div className="px-5 pb-5">
+      {open && (
+      <div
+        id="shopping-list-panel"
+        className="basis-full rounded-xl border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/40 p-5"
+      >
+        <h2 className="text-lg font-semibold mb-1">Shopping list</h2>
         <p className="text-sm text-stone-500 dark:text-stone-400 leading-snug">
           How each item is usually sold, so you buy the jar or bag, not the
           teaspoon. Pack sizes vary by brand and store.
@@ -180,6 +192,7 @@ export default function ShoppingList({
           </div>
         )}
       </div>
-    </details>
+      )}
+    </>
   );
 }

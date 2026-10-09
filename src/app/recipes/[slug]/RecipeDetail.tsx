@@ -187,9 +187,17 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
         ))}
       </div>
 
-      {/* Share */}
-      <div className="mt-4">
+      {/* Share + shopping list buttons (the list opens on its own line below) */}
+      <div className="mt-4 flex flex-wrap items-start gap-3">
         <ShareButton title={recipe.title} />
+        {shoppingRows && (
+          <ShoppingList
+            slug={recipe.slug}
+            title={recipe.title}
+            variation={activeVariation?.name ?? ""}
+            rows={shoppingRows}
+          />
+        )}
       </div>
 
       {/* Reset button */}
@@ -290,16 +298,6 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
           ))}
         </ul>
       </section>
-
-      {/* Shopping list */}
-      {shoppingRows && (
-        <ShoppingList
-          slug={recipe.slug}
-          title={recipe.title}
-          variation={activeVariation?.name ?? ""}
-          rows={shoppingRows}
-        />
-      )}
 
       {/* Steps */}
       <section className="mt-8">
