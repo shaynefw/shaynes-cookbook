@@ -150,6 +150,12 @@ function isSingular(text: string): boolean {
   return text === "1" || /^[⅛¼⅓⅜½⅝⅔¾⅞]$/.test(text);
 }
 
+/** "1⅓ cups", "3 cans": an amount in kitchen-friendly form. */
+export function formatAmount(amount: number, unit: IngredientUnit): string {
+  const q = quantity(amount, unit);
+  return `${q.text} ${q.unit}`;
+}
+
 export function formatIngredient(ing: ScalableIngredient, factor: number): string {
   const q = quantity(ing.amount * factor, ing.unit);
   let line = `${q.text} ${q.unit} ${ing.name}`;

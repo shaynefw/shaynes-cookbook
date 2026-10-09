@@ -1,5 +1,7 @@
 import { renderIngredients } from "@/lib/dishScaling";
 import type { DishScalerConfig } from "@/lib/dishScaling";
+import type { ShoppingItem } from "@/lib/shopping";
+import { shoppingLists } from "@/data/shopping";
 
 export interface RecipeSource {
   name: string;
@@ -50,6 +52,7 @@ export interface Recipe {
   variations?: RecipeVariation[];
   calculator?: CalculatorConfig;
   dishScaler?: DishScalerConfig;
+  shopping?: ShoppingItem[];
   notes?: string[];
   source?: RecipeSource;
 }
@@ -145,7 +148,7 @@ const tunaCasseroleScaler: DishScalerConfig = {
   ],
 };
 
-const recipes: Recipe[] = [
+const baseRecipes: Recipe[] = [
   {
     slug: "maple-walnut-banana-bread",
     title: "Maple Walnut Banana Bread",
@@ -458,6 +461,11 @@ const recipes: Recipe[] = [
     },
   },
 ];
+
+const recipes: Recipe[] = baseRecipes.map((r) => ({
+  ...r,
+  shopping: shoppingLists[r.slug],
+}));
 
 export function getAllRecipes(): Recipe[] {
   return recipes;

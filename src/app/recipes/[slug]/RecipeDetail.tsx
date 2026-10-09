@@ -5,7 +5,13 @@ import Link from "next/link";
 import { Recipe } from "@/data/recipes";
 import RecipeCalculator from "@/components/RecipeCalculator";
 import DishScaler, { useDishState } from "@/components/DishScaler";
-import { isValidDish, renderIngredients } from "@/lib/dishScaling";
+import ShoppingList from "@/components/ShoppingList";
+import {
+  isValidDish,
+  renderIngredients,
+  scaleFactors,
+} from "@/lib/dishScaling";
+import { resolveShopping } from "@/lib/shopping";
 
 function storageKey(slug: string, variation: number, type: "ing" | "steps") {
   return `recipe-${slug}-v${variation}-${type}`;
@@ -125,6 +131,16 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
     selectedVariation >= 0 && recipe.variations
       ? recipe.variations[selectedVariation]
       : null;
+
+  const shoppingRows = recipe.shopping
+    ? resolveShopping(recipe.shopping, {
+        variation: activeVariation?.name,
+        factors:
+          scaler && isValidDish(dish.dims, scaler.headroom)
+            ? scaleFactors(dish.dims, scaler.reference, scaler.headroom)
+            : undefined,
+      })
+    : null;
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
@@ -268,6 +284,16 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
           ))}
         </ul>
       </section>
+
+      {/* Shopping list */}
+      {shoppingRows && (
+        <ShoppingList
+          slug={recipe.slug}
+          title={recipe.title}
+          variation={activeVariation?.name ?? ""}
+          rows={shoppingRows}
+        />
+      )}
 
       {/* Steps */}
       <section className="mt-8">
