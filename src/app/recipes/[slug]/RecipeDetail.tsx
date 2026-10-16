@@ -5,6 +5,8 @@ import Link from "next/link";
 import { Recipe } from "@/data/recipes";
 import RecipeCalculator from "@/components/RecipeCalculator";
 import DishScaler, { useDishState } from "@/components/DishScaler";
+import AmountScaler, { useAmountState } from "@/components/AmountScaler";
+import { amountFactor, renderAmountIngredients } from "@/lib/amountScaling";
 import ShoppingList from "@/components/ShoppingList";
 import ShareButton from "@/components/ShareButton";
 import {
@@ -46,10 +48,17 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
       ? renderIngredients(scaler, dish.dims)
       : null;
 
+  const amount = useAmountState(recipe.slug, recipe.amountScaler);
+  const amountCfg = recipe.amountScaler;
+  const amountIngredients =
+    amountCfg && amount.valid
+      ? renderAmountIngredients(amountCfg, amount.value, amount.input.cupId)
+      : null;
+
   const activeIngredients =
     selectedVariation >= 0 && recipe.variations
       ? recipe.variations[selectedVariation].ingredients
-      : scaledIngredients ?? recipe.ingredients;
+      : scaledIngredients ?? amountIngredients ?? recipe.ingredients;
   const activeSteps =
     selectedVariation >= 0 && recipe.variations
       ? recipe.variations[selectedVariation].steps
@@ -139,7 +148,12 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
         factors:
           scaler && isValidDish(dish.dims, scaler.headroom)
             ? scaleFactors(dish.dims, scaler.reference, scaler.headroom)
-            : undefined,
+            : amountCfg && amount.valid
+              ? (() => {
+                  const f = amountFactor(amountCfg, amount.value, amount.input.cupId);
+                  return { volume: f, area: f };
+                })()
+              : undefined,
       })
     : null;
 
@@ -269,6 +283,9 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
 
       {/* Dish size scaler */}
       {scaler && <DishScaler config={scaler} state={dish} />}
+
+      {/* Rice amount scaler */}
+      {amountCfg && <AmountScaler config={amountCfg} state={amount} />}
 
       {/* Ingredients */}
       <section className="mt-8">

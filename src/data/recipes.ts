@@ -1,5 +1,7 @@
 import { renderIngredients } from "@/lib/dishScaling";
 import type { DishScalerConfig } from "@/lib/dishScaling";
+import { renderAmountIngredients } from "@/lib/amountScaling";
+import type { AmountScalerConfig } from "@/lib/amountScaling";
 import type { ShoppingItem } from "@/lib/shopping";
 import { shoppingLists } from "@/data/shopping";
 
@@ -52,6 +54,7 @@ export interface Recipe {
   variations?: RecipeVariation[];
   calculator?: CalculatorConfig;
   dishScaler?: DishScalerConfig;
+  amountScaler?: AmountScalerConfig;
   shopping?: ShoppingItem[];
   notes?: string[];
   source?: RecipeSource;
@@ -221,6 +224,56 @@ const scallopedBakeScaler: DishScalerConfig = {
       note: "for the middle layer",
       scaleBy: "area",
     },
+  ],
+};
+
+// Kimchi (~150 g per cup) and cubed Spam (~165 g per cup) are converted from the
+// source's grams to cups using those rough densities; the rice cup is assumed to
+// be the 180 mL rice-cooker cup, which is what the 375 mL of water implies.
+const kimchiSpamRiceScaler: AmountScalerConfig = {
+  inputLabel: "Cups of rice",
+  riceName: "jasmine rice",
+  reference: 3,
+  defaultAmount: 3,
+  referenceCupId: "cooker",
+  defaultCupId: "cooker",
+  cupOptions: [
+    { id: "cooker", label: "Rice-cooker cup (180 mL)", noun: "rice-cooker cup", ml: 180 },
+    { id: "standard", label: "Standard measuring cup (240 mL)", noun: "cup", ml: 240 },
+  ],
+  ingredients: [
+    { amount: 3, unit: "tbsp", name: "gochujang", smart: true, scaleBy: "volume" },
+    { amount: 1, unit: "tbsp", name: "fish sauce", smart: true, scaleBy: "volume" },
+    {
+      amount: 250 / 150,
+      unit: "cup",
+      name: "kimchi",
+      note: "chopped",
+      smart: true,
+      metric: { perUnit: 150, unit: "g" },
+      scaleBy: "volume",
+    },
+    { amount: 2, unit: "tbsp", name: "sesame oil", smart: true, scaleBy: "volume" },
+    {
+      amount: 1.5,
+      unit: "cup",
+      name: "water",
+      smart: true,
+      metric: { perUnit: 250, unit: "mL" },
+      scaleBy: "volume",
+    },
+    {
+      amount: 250 / 165,
+      unit: "cup",
+      name: "Spam",
+      note: "cubed",
+      smart: true,
+      metric: { perUnit: 165, unit: "g" },
+      scaleBy: "volume",
+    },
+    { amount: 0, unit: "tsp", name: "", text: "fried egg, optional", scaleBy: "volume" },
+    { amount: 0, unit: "tsp", name: "", text: "spring onion, sliced, for garnish", scaleBy: "volume" },
+    { amount: 0, unit: "tsp", name: "", text: "chili crunch, optional", scaleBy: "volume" },
   ],
 };
 
@@ -570,6 +623,32 @@ const baseRecipes: Recipe[] = [
       name: "Tasty",
       url: "https://tasty.co/recipe/scalloped-vegetable-bake",
     },
+  },
+  {
+    slug: "kimchi-spam-rice-cooker-rice",
+    title: "Kimchi & Spam Rice Cooker Rice",
+    description:
+      "A savory, spicy one-button meal: jasmine rice, gochujang, kimchi and cubed Spam all go in the rice cooker together. Top it with a fried egg, spring onion and chili crunch. Enter how much rice you are cooking and every amount adjusts, in cups and spoons.",
+    prepTime: "—",
+    cookTime: "1 rice cooker cycle",
+    servings: "Scales to the rice you cook (3 rice-cooker cups as written)",
+    tags: ["rice cooker", "one-pot", "weeknight", "korean-inspired"],
+    ingredients: renderAmountIngredients(kimchiSpamRiceScaler, 3, "cooker"),
+    steps: [
+      "Put the jasmine rice in the rice cooker pot.",
+      "Add the water, gochujang, fish sauce and sesame oil, and stir until the gochujang dissolves.",
+      "Add the chopped kimchi and cubed Spam on top.",
+      "Close the lid and start the rice cooker. That's the whole cook.",
+      "When it finishes, stir everything together.",
+      "Serve topped with a fried egg, sliced spring onion and chili crunch, as you like.",
+    ],
+    amountScaler: kimchiSpamRiceScaler,
+    notes: [
+      "Which cup? The recipe I was given said \"3 cups\" of rice with 375 mL of water and did not say which cup. That much water only makes sense for the small 180 mL cup that comes with a rice cooker (about 1 part water to 1 part rice is a common rice-cooker ratio for jasmine, though yours may differ), so the page assumes that cup. If you measure rice in standard 240 mL cups, switch the cup size above and every amount scales up to match.",
+      "If your rice comes out too firm or too soft, adjust the water a little next time and keep the same amount.",
+      "Kimchi and Spam were given in grams (250 g each). The cup amounts use rough densities of about 150 g per cup for kimchi and about 165 g per cup for cubed Spam, so treat them as close guides. A 12 oz (340 g) can of Spam is a little more than you need at the original size.",
+      "The source only said to put everything in the rice cooker and press start. The step wording here is mine, and the original author is not known.",
+    ],
   },
 ];
 

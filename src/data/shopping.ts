@@ -657,6 +657,93 @@ const scallopedBake: ShoppingItem[] = [
   },
 ];
 
+const kimchiSpamRice: ShoppingItem[] = [
+  {
+    name: "Spring onions",
+    aisle: "Produce",
+    buy: "1 bunch",
+    uses: "sliced, for garnish",
+  },
+  {
+    name: "Spam",
+    aisle: "Canned & jarred",
+    pack: {
+      label: "12 oz (340 g) can of Spam",
+      plural: "12 oz (340 g) cans of Spam",
+      size: 12,
+      unit: "oz",
+      needed: [{ amount: 8.82, scaleBy: "volume" }],
+    },
+    usesScaled: { needed: [{ amount: 250 / 165, scaleBy: "volume" }], unit: "cup", smart: true },
+    note: "Cubed. Any leftover Spam keeps well.",
+  },
+  {
+    name: "Jasmine rice",
+    aisle: "Pasta & dry goods",
+    pack: {
+      label: "bag of jasmine rice (2 lb / 900 g or larger)",
+      plural: "bags of jasmine rice (2 lb / 900 g or larger)",
+      size: 5,
+      unit: "cup",
+      needed: [{ amount: 2.25, scaleBy: "volume" }],
+    },
+    usesScaled: { needed: [{ amount: 2.25, scaleBy: "volume" }], unit: "cup", smart: true },
+    note: "Shown in standard cups. A bigger bag is better value if you cook this often.",
+  },
+  {
+    name: "Kimchi",
+    aisle: "Asian & international",
+    pack: {
+      label: "jar of kimchi (about 16 oz / 450 g)",
+      plural: "jars of kimchi (about 16 oz / 450 g each)",
+      size: 16,
+      unit: "oz",
+      needed: [{ amount: 8.82, scaleBy: "volume" }],
+    },
+    usesScaled: { needed: [{ amount: 250 / 150, scaleBy: "volume" }], unit: "cup", smart: true },
+    note: "Usually in the refrigerated section. The jar's juice comes along with it.",
+  },
+  {
+    name: "Gochujang",
+    aisle: "Asian & international",
+    buy: "1 tub or jar",
+    usesScaled: { needed: [{ amount: 3, scaleBy: "volume" }], unit: "tbsp", smart: true },
+  },
+  {
+    name: "Fish sauce",
+    aisle: "Asian & international",
+    buy: "1 bottle",
+    usesScaled: { needed: [{ amount: 1, scaleBy: "volume" }], unit: "tbsp", smart: true },
+  },
+  {
+    name: "Toasted sesame oil",
+    aisle: "Asian & international",
+    buy: "1 small bottle",
+    usesScaled: { needed: [{ amount: 2, scaleBy: "volume" }], unit: "tbsp", smart: true },
+  },
+  {
+    name: "Eggs",
+    aisle: "Dairy & eggs",
+    buy: "1 carton (6 or 12)",
+    uses: "fried, on top, as many as you like",
+    optional: true,
+  },
+  {
+    name: "Chili crunch",
+    aisle: "Asian & international",
+    buy: "1 jar",
+    uses: "to taste, on top",
+    optional: true,
+  },
+  {
+    name: "Water",
+    aisle: "Other",
+    buy: "From the tap",
+    usesScaled: { needed: [{ amount: 1.5, scaleBy: "volume" }], unit: "cup", smart: true },
+    pantry: true,
+  },
+];
+
 export const shoppingLists: Record<string, ShoppingItem[]> = {
   "maple-walnut-banana-bread": bananaBread,
   "okinawan-lentil-sweet-potato-stew": okinawanStew,
@@ -665,4 +752,5 @@ export const shoppingLists: Record<string, ShoppingItem[]> = {
   "jerk-chicken-dry-rub": jerkChicken,
   "old-fashioned-tuna-noodle-casserole": tunaCasserole,
   "scalloped-vegetable-bake": scallopedBake,
+  "kimchi-spam-rice-cooker-rice": kimchiSpamRice,
 };

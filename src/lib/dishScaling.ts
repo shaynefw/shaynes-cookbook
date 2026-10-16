@@ -31,6 +31,10 @@ export interface ScalableIngredient {
   alt?: { size: number; label: string };
   /** A fixed line that never scales, e.g. "salt, to taste". */
   text?: string;
+  /** Show cups / spoons the way a cook would measure them (1⅔ cups, ½ cup + 1 tbsp). */
+  smart?: boolean;
+  /** Adds "(about 250 g)" or "(about 375 mL)", scaled with the amount. */
+  metric?: { perUnit: number; unit: "g" | "mL" };
 }
 
 export interface DishScalerConfig {
@@ -163,11 +167,84 @@ export function formatAmount(amount: number, unit: IngredientUnit): string {
   return `${q.text} ${q.unit}`.trim();
 }
 
+const TSP_PER_UNIT = { cup: 48, tbsp: 3, tsp: 1 } as const;
+
+export function toTsp(amount: number, unit: "cup" | "tbsp" | "tsp"): number {
+  return amount * TSP_PER_UNIT[unit];
+}
+
+/** A whole-number-or-fraction count like "2½" (nearest ⅛). */
+export function formatCount(n: number): string {
+  return snap(n, EIGHTH_FRACTIONS);
+}
+
+/** Spoon sizes only: "1 tbsp + 1¼ tsp". `t` is in teaspoons. */
+function spoonForm(t: number): string {
+  const q = Math.round(t * 4) / 4;
+  let tbsp = Math.floor(q / 3 + 1e-9);
+  let rest = Math.round((q - tbsp * 3) * 4) / 4;
+  if (rest >= 3) {
+    tbsp += 1;
+    rest = 0;
+  }
+  const parts: string[] = [];
+  if (tbsp > 0) parts.push(`${tbsp} tbsp`);
+  if (rest > 0) parts.push(`${snap(rest, EIGHTH_FRACTIONS)} tsp`);
+  return parts.join(" + ") || "0 tsp";
+}
+
+/**
+ * Express a volume (in teaspoons) in whatever the cook would reach for:
+ * a plain cup fraction (1⅔ cups) when it fits, spoons for small amounts
+ * (6 tbsp, 1 tbsp + 1 tsp), otherwise cups plus spoons (1½ cups + 1 tbsp).
+ */
+export function formatKitchenVolume(tsp: number): string {
+  if (tsp <= 0) return "0 tsp";
+  if (tsp < 12) return spoonForm(tsp);
+
+  const tol = Math.max(1.5, tsp * 0.03);
+  const whole = Math.floor(tsp / 48);
+  let best = { f: 0, err: Infinity };
+  for (const f of CUP_FRACTIONS) {
+    const err = Math.abs((whole + f) * 48 - tsp);
+    if (err < best.err) best = { f, err };
+  }
+  if (best.err <= tol) {
+    const text = snap(whole + best.f, CUP_FRACTIONS);
+    return `${text} ${isSingular(text) ? "cup" : "cups"}`;
+  }
+
+  if (tsp <= 24) return spoonForm(tsp);
+
+  // Cups in quarter-cup steps, plus the leftover in half-tablespoons.
+  let quarters = Math.floor(tsp / 12);
+  let halfTbsp = Math.round(((tsp - quarters * 12) / 3) * 2); // 0..8
+  if (halfTbsp >= 8) {
+    quarters += 1;
+    halfTbsp = 0;
+  }
+  const cupsText = snap(quarters / 4, QUARTER_FRACTIONS);
+  const cupsPart = `${cupsText} ${isSingular(cupsText) ? "cup" : "cups"}`;
+  return halfTbsp === 0
+    ? cupsPart
+    : `${cupsPart} + ${snap(halfTbsp / 2, HALF_FRACTIONS)} tbsp`;
+}
+
 export function formatIngredient(ing: ScalableIngredient, factor: number): string {
   if (ing.text !== undefined) return ing.text;
-  const q = quantity(ing.amount * factor, ing.unit);
-  let line = [q.text, q.unit, ing.name].filter(Boolean).join(" ");
+  const amount = ing.amount * factor;
+  let line: string;
+  if (ing.smart && (ing.unit === "cup" || ing.unit === "tbsp" || ing.unit === "tsp")) {
+    line = `${formatKitchenVolume(toTsp(amount, ing.unit))} ${ing.name}`;
+  } else {
+    const q = quantity(amount, ing.unit);
+    line = [q.text, q.unit, ing.name].filter(Boolean).join(" ");
+  }
   if (ing.note) line += `, ${ing.note}`;
+  if (ing.metric) {
+    const v = Math.round((amount * ing.metric.perUnit) / 5) * 5;
+    line += ` (about ${v} ${ing.metric.unit})`;
+  }
   if (ing.alt) {
     const n = snap((ing.amount * factor) / ing.alt.size, HALF_FRACTIONS);
     line += ` (about ${n} × ${ing.alt.label})`;

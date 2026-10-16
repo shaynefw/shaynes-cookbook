@@ -1,4 +1,9 @@
-import { formatAmount, type IngredientUnit } from "@/lib/dishScaling";
+import {
+  formatAmount,
+  formatKitchenVolume,
+  toTsp,
+  type IngredientUnit,
+} from "@/lib/dishScaling";
 
 export type Aisle =
   | "Produce"
@@ -11,6 +16,7 @@ export type Aisle =
   | "Baking"
   | "Spices & seasonings"
   | "Sauces & condiments"
+  | "Asian & international"
   | "Other";
 
 /** Roughly the order you walk through a store. */
@@ -25,6 +31,7 @@ export const AISLE_ORDER: Aisle[] = [
   "Baking",
   "Spices & seasonings",
   "Sauces & condiments",
+  "Asian & international",
   "Other",
 ];
 
@@ -58,6 +65,8 @@ export interface ShoppingItem {
   usesScaled?: {
     needed: { amount: number; scaleBy: "volume" | "area" }[];
     unit: IngredientUnit;
+    /** Show as cups / spoons (1⅔ cups, ½ cup + 1 tbsp). */
+    smart?: boolean;
   };
   /** Different text for a chosen portion size, keyed by the variation's name. */
   variations?: Record<string, { buy?: string; uses?: string }>;
@@ -113,12 +122,20 @@ export function resolveShopping(
           item.pack.unit === "can" ? undefined : formatAmount(total, item.pack.unit);
       }
       buy = `${count} × ${count === 1 ? item.pack.label : item.pack.plural}`;
-    } else if (item.usesScaled) {
-      uses = formatAmount(sumNeeded(item.usesScaled.needed), item.usesScaled.unit);
     } else if (ctx.variation && item.variations?.[ctx.variation]) {
       const v = item.variations[ctx.variation];
       buy = v.buy ?? buy;
       uses = v.uses ?? uses;
+    }
+
+    // A scaled "Recipe uses" amount wins over any static or pack-derived text.
+    if (item.usesScaled) {
+      const total = sumNeeded(item.usesScaled.needed);
+      const u = item.usesScaled.unit;
+      uses =
+        item.usesScaled.smart && (u === "cup" || u === "tbsp" || u === "tsp")
+          ? formatKitchenVolume(toTsp(total, u))
+          : formatAmount(total, u);
     }
 
     return {
