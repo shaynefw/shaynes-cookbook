@@ -708,6 +708,7 @@ const kimchiSpamRice: ShoppingItem[] = [
     aisle: "Asian & international",
     buy: "1 tub or jar",
     usesScaled: { needed: [{ amount: 3, scaleBy: "volume" }], unit: "tbsp", smart: true },
+    note: "Don't have it? Miso plus chili works. See the substitutes under Ingredients.",
   },
   {
     name: "Fish sauce",

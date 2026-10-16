@@ -2,6 +2,7 @@ import { renderIngredients } from "@/lib/dishScaling";
 import type { DishScalerConfig } from "@/lib/dishScaling";
 import { renderAmountIngredients } from "@/lib/amountScaling";
 import type { AmountScalerConfig } from "@/lib/amountScaling";
+import type { IngredientSubstitution } from "@/lib/substitutions";
 import type { ShoppingItem } from "@/lib/shopping";
 import { shoppingLists } from "@/data/shopping";
 
@@ -55,6 +56,7 @@ export interface Recipe {
   calculator?: CalculatorConfig;
   dishScaler?: DishScalerConfig;
   amountScaler?: AmountScalerConfig;
+  substitution?: IngredientSubstitution;
   shopping?: ShoppingItem[];
   notes?: string[];
   source?: RecipeSource;
@@ -274,6 +276,46 @@ const kimchiSpamRiceScaler: AmountScalerConfig = {
     { amount: 0, unit: "tsp", name: "", text: "fried egg, optional", scaleBy: "volume" },
     { amount: 0, unit: "tsp", name: "", text: "spring onion, sliced, for garnish", scaleBy: "volume" },
     { amount: 0, unit: "tsp", name: "", text: "chili crunch, optional", scaleBy: "volume" },
+  ],
+};
+
+// Per 1 tbsp of gochujang: about 1/2 tbsp miso + 1/2 tbsp sriracha or gochugaru
+// + 1/2 tsp sugar, scaled up to the recipe's 3 tbsp. Ratios vary between sources.
+const gochujangSubstitution: IngredientSubstitution = {
+  title: "No gochujang? Try one of these",
+  replaces: "the 3 tbsp of gochujang",
+  options: [
+    {
+      name: "Miso + sriracha + sugar",
+      parts: [
+        { amount: 1.5, unit: "tbsp", name: "miso (white or red)", smart: true, scaleBy: "volume" },
+        { amount: 1.5, unit: "tbsp", name: "sriracha", smart: true, scaleBy: "volume" },
+        { amount: 1.5, unit: "tsp", name: "sugar", smart: true, scaleBy: "volume" },
+      ],
+      note: "The easiest pantry swap. Stir it into a paste before it goes in the rice cooker.",
+    },
+    {
+      name: "Miso + Korean chili flakes + sugar",
+      parts: [
+        { amount: 1.5, unit: "tbsp", name: "miso (white or red)", smart: true, scaleBy: "volume" },
+        { amount: 1.5, unit: "tbsp", name: "gochugaru (Korean chili flakes)", smart: true, scaleBy: "volume" },
+        { amount: 1.5, unit: "tsp", name: "sugar", smart: true, scaleBy: "volume" },
+      ],
+      note: "Closest match to the real thing, with no vinegar tang. No gochugaru? Cayenne and paprika can stand in, roughly half of each. Start with less heat and add more.",
+    },
+    {
+      name: "Ssamjang",
+      parts: [{ amount: 3, unit: "tbsp", name: "ssamjang", smart: true, scaleBy: "volume" }],
+      note: "A Korean dipping sauce that already contains gochujang and fermented soybean paste, so it tastes similar but is chunkier. Taste first, since sources do not give an exact swap ratio.",
+    },
+  ],
+  caution:
+    "Don't swap plain hot sauce for gochujang one for one. Sriracha and sambal oelek contain vinegar, so the rice comes out spicier and tangier. Miso is salty too, so go easy on extra fish sauce.",
+  sources: [
+    { name: "Hip Hip Gourmet", url: "https://hiphipgourmet.com/gochujang-substitutes/" },
+    { name: "Savory Sweet Spoon", url: "https://www.savorysweetspoon.com/gochujang-substitute/" },
+    { name: "Pepper Geek", url: "https://peppergeek.com/gochujang-substitute/" },
+    { name: "PepperScale", url: "https://pepperscale.com/gochujang-substitute/" },
   ],
 };
 
@@ -643,6 +685,7 @@ const baseRecipes: Recipe[] = [
       "Serve topped with a fried egg, sliced spring onion and chili crunch, as you like.",
     ],
     amountScaler: kimchiSpamRiceScaler,
+    substitution: gochujangSubstitution,
     notes: [
       "Which cup? The recipe I was given said \"3 cups\" of rice with 375 mL of water and did not say which cup. That much water only makes sense for the small 180 mL cup that comes with a rice cooker (about 1 part water to 1 part rice is a common rice-cooker ratio for jasmine, though yours may differ), so the page assumes that cup. If you measure rice in standard 240 mL cups, switch the cup size above and every amount scales up to match.",
       "If your rice comes out too firm or too soft, adjust the water a little next time and keep the same amount.",

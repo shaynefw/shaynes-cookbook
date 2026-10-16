@@ -9,6 +9,7 @@ import AmountScaler, { useAmountState } from "@/components/AmountScaler";
 import { amountFactor, renderAmountIngredients } from "@/lib/amountScaling";
 import ShoppingList from "@/components/ShoppingList";
 import ShareButton from "@/components/ShareButton";
+import Substitutions from "@/components/Substitutions";
 import {
   isValidDish,
   renderIngredients,
@@ -315,6 +316,18 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
           ))}
         </ul>
       </section>
+
+      {/* Ingredient substitutions */}
+      {recipe.substitution && (
+        <Substitutions
+          data={recipe.substitution}
+          factor={
+            amountCfg && amount.valid
+              ? amountFactor(amountCfg, amount.value, amount.input.cupId)
+              : 1
+          }
+        />
+      )}
 
       {/* Steps */}
       <section className="mt-8">
