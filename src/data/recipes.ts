@@ -188,11 +188,11 @@ const scallopedBakeScaler: DishScalerConfig = {
     },
   ],
   bakeNotes: {
-    same: "Your layers will be about as deep as the original, so bake about 1½ hours, covered with foil, until the vegetables are tender when poked with a knife.",
+    same: "Your layers will be about as deep as the original, so bake about 1½ hours, covered with foil. Poke the middle with a fork: if the vegetables still feel tough, put it back for another 15–30 minutes and check again.",
     deeper:
-      "Your layers will be thicker than the original, so it may need 15–30 minutes longer. Check that a knife slides into the middle easily.",
+      "Your layers will be thicker than the original, so it may need 15–30 minutes longer. Poke the middle with a fork: if the vegetables still feel tough, put it back for another 15–30 minutes and check again.",
     shallower:
-      "Your layers will be thinner than the original, so start checking at about 1 hour 15 minutes.",
+      "Your layers will be thinner than the original, so start checking at about 1 hour 15 minutes. Poke the middle with a fork: if the vegetables still feel tough, put it back for another 15–30 minutes and check again.",
   },
   ingredients: [
     { amount: 2, unit: "each", name: "medium zucchini", note: "washed", scaleBy: "volume" },
@@ -674,12 +674,13 @@ const baseRecipes: Recipe[] = [
       "Spread half of the vegetable slices in the prepared dish and flatten them with a spoon.",
       "Sprinkle the cheddar evenly over the vegetables.",
       "Top with the rest of the vegetables, then cover the dish with aluminum foil.",
-      "Bake for about 1½ hours, until the vegetables are fully cooked and tender (see the baking note above for your dish).",
+      "Bake for about 1½ hours, then poke the middle with a fork or knife. The vegetables should slide off easily and feel fully tender. If they still look or feel tough, cover the dish again and put it back in the oven for another 15–30 minutes, checking with the fork each time. Go by tenderness rather than the clock (see the baking note above for your dish).",
       "Let it cool for at least 10 minutes. If you used a springform pan, release the ring, then slice and serve.",
     ],
     dishScaler: scallopedBakeScaler,
     notes: [
       "Nutrition per serving, from the original recipe: 421 calories, 40 g carbohydrate, 22 g fat, 4 g fiber, 16 g protein, 5 g sugar.",
+      "Doneness check: when this was first made, 1½ hours left the vegetables a little firm. Oven and dish differences matter, so always test the middle with a fork. If it's still tough, cover it and bake another 15–30 minutes.",
       "Portion scaling assumes the original 10-inch springform is about 2¾ inches deep (the source doesn't say), so treat the amounts for other dishes as a close guide.",
     ],
     source: {
