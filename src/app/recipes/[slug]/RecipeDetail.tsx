@@ -9,6 +9,8 @@ import AmountScaler, { useAmountState } from "@/components/AmountScaler";
 import { amountFactor, renderAmountIngredients } from "@/lib/amountScaling";
 import ShoppingList from "@/components/ShoppingList";
 import ShareButton from "@/components/ShareButton";
+import { BrandMark } from "@/lib/brand";
+import { paletteFor } from "@/lib/recipeStyle";
 import Substitutions from "@/components/Substitutions";
 import {
   isValidDish,
@@ -137,6 +139,7 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
     saveChecked(recipe.slug, selectedVariation, "steps", emptySteps);
   }
 
+  const palette = paletteFor(recipe.slug, recipe.tags);
   const completedSteps = checkedSteps.filter(Boolean).length;
   const activeVariation =
     selectedVariation >= 0 && recipe.variations
@@ -180,30 +183,55 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
         All recipes
       </Link>
 
-      <h1 className="text-2xl font-bold tracking-tight">{recipe.title}</h1>
-      <p className="mt-2 text-stone-600 dark:text-stone-400 leading-relaxed">
-        {recipe.description}
-      </p>
+      <header
+        className={`relative overflow-hidden rounded-3xl border border-stone-300/70 dark:border-stone-700/60
+          bg-gradient-to-br ${palette.banner} px-6 py-8 sm:px-9 sm:py-10`}
+      >
+        <div className="pointer-events-none absolute -right-6 -bottom-10 opacity-60 dark:opacity-10">
+          <BrandMark size={210} tile={false} />
+        </div>
+        <div className="relative">
+          <h1 className="font-display text-[calc(1.875rem*var(--hs,1))] sm:text-[calc(2.25rem*var(--hs,1))] font-semibold leading-tight tracking-tight">
+            {recipe.title}
+          </h1>
+          <p className="mt-3 max-w-2xl text-stone-700 dark:text-stone-300 leading-relaxed">
+            {recipe.description}
+          </p>
 
-      <div className="mt-4 flex flex-wrap gap-4 text-sm text-stone-500 dark:text-stone-400">
-        <span>Prep: {recipe.prepTime}</span>
-        <span>Cook: {recipe.cookTime}</span>
-        <span>Serves: {recipe.servings}</span>
-      </div>
+          <dl className="mt-5 flex flex-wrap gap-x-7 gap-y-3 text-sm">
+            {recipe.prepTime && recipe.prepTime !== "—" && (
+              <div>
+                <dt className="text-xs uppercase tracking-wider text-stone-500 dark:text-stone-400">Prep</dt>
+                <dd className="font-medium">{recipe.prepTime}</dd>
+              </div>
+            )}
+            {recipe.cookTime && recipe.cookTime !== "—" && (
+              <div>
+                <dt className="text-xs uppercase tracking-wider text-stone-500 dark:text-stone-400">Cook</dt>
+                <dd className="font-medium">{recipe.cookTime}</dd>
+              </div>
+            )}
+            <div className="max-w-xs">
+              <dt className="text-xs uppercase tracking-wider text-stone-500 dark:text-stone-400">Serves</dt>
+              <dd className="font-medium">{recipe.servings}</dd>
+            </div>
+          </dl>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        {recipe.tags.map((tag) => (
-          <span
-            key={tag}
-            className="text-xs px-2 py-0.5 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400"
-          >
-            {tag}
-          </span>
-        ))}
-      </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {recipe.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-xs px-2.5 py-1 rounded-full bg-white/60 dark:bg-stone-900/50 text-stone-700 dark:text-stone-300"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </header>
 
       {/* Share + shopping list buttons (the list opens on its own line below) */}
-      <div className="mt-4 flex flex-wrap items-start gap-3">
+      <div className="mt-5 flex flex-wrap items-start gap-3">
         <ShareButton title={recipe.title} />
         {shoppingRows && (
           <ShoppingList
@@ -290,7 +318,7 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
 
       {/* Ingredients */}
       <section className="mt-8">
-        <h2 className="text-lg font-semibold mb-3">Ingredients</h2>
+        <h2 className="font-display text-xl font-semibold mb-3">Ingredients</h2>
         <ul className="space-y-2">
           {activeIngredients.map((item, i) => (
             <li key={`${selectedVariation}-${i}`}>
@@ -332,7 +360,7 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
       {/* Steps */}
       <section className="mt-8">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Steps</h2>
+          <h2 className="font-display text-xl font-semibold">Steps</h2>
           <span className="text-sm text-stone-500 dark:text-stone-400">
             {completedSteps}/{activeSteps.length} done
           </span>
@@ -371,7 +399,7 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
       {/* Notes */}
       {recipe.notes && recipe.notes.length > 0 && (
         <section className="mt-8">
-          <h2 className="text-lg font-semibold mb-3">Notes</h2>
+          <h2 className="font-display text-xl font-semibold mb-3">Notes</h2>
           <ul className="space-y-2 list-disc pl-5 text-stone-700 dark:text-stone-300">
             {recipe.notes.map((n) => (
               <li key={n}>{n}</li>

@@ -5,6 +5,15 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: rgba(217, 119, 6, 0.28);
 }
 
 body {
@@ -18,7 +27,12 @@ body {
   color: #d4c9a8;
 }
 
-/* Text size presets — applied to <html> */
+/* Text size presets — applied to <html>. --hs scales the big page titles. */
+.size-sm { --hs: 1; }
+.size-md { --hs: 1.08; }
+.size-lg { --hs: 1.16; }
+.size-xl { --hs: 1.26; }
+.size-xxl { --hs: 1.36; }
 .size-sm main {
   font-size: 1rem;
 }
@@ -34,7 +48,6 @@ body {
   width: 1.5rem;
   height: 1.5rem;
 }
-.size-md main h1 { font-size: 1.75rem; }
 .size-md main h2 { font-size: 1.35rem; }
 
 .size-lg main {
@@ -44,7 +57,6 @@ body {
   width: 1.75rem;
   height: 1.75rem;
 }
-.size-lg main h1 { font-size: 2rem; }
 .size-lg main h2 { font-size: 1.5rem; }
 
 .size-xl main {
@@ -54,7 +66,6 @@ body {
   width: 2rem;
   height: 2rem;
 }
-.size-xl main h1 { font-size: 2.25rem; }
 .size-xl main h2 { font-size: 1.65rem; }
 
 .size-xxl main {
@@ -64,5 +75,4 @@ body {
   width: 2.25rem;
   height: 2.25rem;
 }
-.size-xxl main h1 { font-size: 2.5rem; }
 .size-xxl main h2 { font-size: 1.8rem; }

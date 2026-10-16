@@ -168,7 +168,7 @@ export default function DishScaler({
       className="mt-6 rounded-xl border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/40 p-5"
       aria-labelledby="dish-scaler-heading"
     >
-      <h2 id="dish-scaler-heading" className="text-lg font-semibold mb-1">
+      <h2 id="dish-scaler-heading" className="font-display text-xl font-semibold mb-1">
         Fit to your baking dish
       </h2>
       <p className="text-sm text-stone-500 dark:text-stone-400 mb-4 leading-snug">

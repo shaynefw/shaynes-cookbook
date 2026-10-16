@@ -102,7 +102,7 @@ export default function RecipeCalculator({
     >
       <h2
         id="recipe-calculator-heading"
-        className="text-lg font-semibold mb-3"
+        className="font-display text-xl font-semibold mb-3"
       >
         Scale by weight
       </h2>
