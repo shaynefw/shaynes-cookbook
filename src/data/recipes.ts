@@ -308,14 +308,35 @@ const gochujangSubstitution: IngredientSubstitution = {
       parts: [{ amount: 3, unit: "tbsp", name: "ssamjang", smart: true, scaleBy: "volume" }],
       note: "A Korean dipping sauce that already contains gochujang and fermented soybean paste, so it tastes similar but is chunkier. Taste first, since sources do not give an exact swap ratio.",
     },
+    {
+      name: "Tomato paste + chili flakes",
+      parts: [
+        { amount: 3, unit: "tbsp", name: "tomato paste", smart: true, scaleBy: "volume" },
+        { amount: 1, unit: "tbsp", name: "red pepper (chili) flakes", smart: true, scaleBy: "volume" },
+        { amount: 1.5, unit: "tsp", name: "soy sauce", smart: true, scaleBy: "volume" },
+        { amount: 1.5, unit: "tsp", name: "sugar", smart: true, scaleBy: "volume" },
+      ],
+      note: "Pantry staples only. It gives the sweet heat and thick body but not the fermented depth, so stir in a little miso if you have it. My blend of the amounts the recipe sites suggest.",
+    },
+    {
+      name: "Ketchup + chili flakes + soy sauce",
+      parts: [
+        { amount: 3, unit: "tbsp", name: "ketchup", smart: true, scaleBy: "volume" },
+        { amount: 1, unit: "tbsp", name: "red pepper (chili) flakes", smart: true, scaleBy: "volume" },
+        { amount: 3, unit: "tsp", name: "soy sauce", smart: true, scaleBy: "volume" },
+      ],
+      note: "The last-resort swap. Ketchup is already sweet, so there is no sugar. It will taste milder and sweeter than gochujang, so add more chili flakes for heat. My blend of the amounts the recipe sites suggest.",
+    },
   ],
   caution:
-    "Don't swap plain hot sauce for gochujang one for one. Sriracha and sambal oelek contain vinegar, so the rice comes out spicier and tangier. Miso is salty too, so go easy on extra fish sauce.",
+    "Don't swap plain hot sauce for gochujang one for one. Sriracha and sambal oelek contain vinegar, so the rice comes out spicier and tangier. Miso and soy sauce are salty too, so go easy on extra fish sauce. None of these have gochujang's fermented depth, and the thick pastes may need a splash of water to blend into the rice.",
   sources: [
     { name: "Hip Hip Gourmet", url: "https://hiphipgourmet.com/gochujang-substitutes/" },
     { name: "Savory Sweet Spoon", url: "https://www.savorysweetspoon.com/gochujang-substitute/" },
     { name: "Pepper Geek", url: "https://peppergeek.com/gochujang-substitute/" },
     { name: "PepperScale", url: "https://pepperscale.com/gochujang-substitute/" },
+    { name: "Bake It With Love", url: "https://bakeitwithlove.com/gochujang-substitute" },
+    { name: "The Daily Meal", url: "https://www.thedailymeal.com/1260819/gochujang-best-replacement/" },
   ],
 };
 
