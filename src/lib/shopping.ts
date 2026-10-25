@@ -1,6 +1,7 @@
 import {
   formatAmount,
   formatKitchenVolume,
+  formatVolumeRange,
   toTsp,
   type IngredientUnit,
 } from "@/lib/dishScaling";
@@ -46,6 +47,8 @@ export interface ShoppingPack {
   needed: { amount: number; scaleBy: "volume" | "area" }[];
   /** For unit "each": the word to show in "Recipe uses", e.g. "eggs". */
   usesWord?: string;
+  /** Same word when the count is 1, e.g. "egg". */
+  usesWordSingular?: string;
 }
 
 export interface ShoppingItem {
@@ -67,6 +70,8 @@ export interface ShoppingItem {
     unit: IngredientUnit;
     /** Show as cups / spoons (1⅔ cups, ½ cup + 1 tbsp). */
     smart?: boolean;
+    /** Show a range: the top end is the low end times this ("1–2 tsp" = 2). */
+    rangeFactor?: number;
   };
   /** Different text for a chosen portion size, keyed by the variation's name. */
   variations?: Record<string, { buy?: string; uses?: string }>;
@@ -111,9 +116,10 @@ export function resolveShopping(
       if (item.pack.unit === "each") {
         // Whole items: buy what the ingredient list shows (rounded to whole).
         count = Math.max(1, Math.ceil(Math.max(1, Math.round(total)) / item.pack.size));
-        uses = item.pack.usesWord
-          ? `${Math.max(1, Math.round(total))} ${item.pack.usesWord}`
-          : undefined;
+        const n = Math.max(1, Math.round(total));
+        const word =
+          n === 1 && item.pack.usesWordSingular ? item.pack.usesWordSingular : item.pack.usesWord;
+        uses = word ? `${n} ${word}` : undefined;
       } else {
         // Up to 12% over a whole pack still counts as that pack (1.09 cans of
         // soup reads as "1 can" in the ingredient list, so buy 1, not 2).
@@ -132,9 +138,12 @@ export function resolveShopping(
     if (item.usesScaled) {
       const total = sumNeeded(item.usesScaled.needed);
       const u = item.usesScaled.unit;
+      const isVolume = u === "cup" || u === "tbsp" || u === "tsp";
       uses =
-        item.usesScaled.smart && (u === "cup" || u === "tbsp" || u === "tsp")
-          ? formatKitchenVolume(toTsp(total, u))
+        item.usesScaled.smart && isVolume
+          ? item.usesScaled.rangeFactor
+            ? formatVolumeRange(toTsp(total, u), toTsp(total * item.usesScaled.rangeFactor, u))
+            : formatKitchenVolume(toTsp(total, u))
           : formatAmount(total, u);
     }
 

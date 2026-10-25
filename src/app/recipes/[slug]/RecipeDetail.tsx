@@ -408,6 +408,26 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
         </section>
       )}
 
+      {recipe.references && recipe.references.length > 0 && (
+        <div className="mt-6 text-sm text-stone-500 dark:text-stone-400">
+          <p className="font-medium text-stone-600 dark:text-stone-300">Sources for the notes</p>
+          <ul className="mt-1 space-y-0.5 list-disc pl-5">
+            {recipe.references.map((ref) => (
+              <li key={ref.url}>
+                <a
+                  href={ref.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-stone-800 dark:hover:text-stone-200"
+                >
+                  {ref.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {recipe.source && (
         <p className="mt-8 text-sm text-stone-500 dark:text-stone-400">
           Adapted from{" "}

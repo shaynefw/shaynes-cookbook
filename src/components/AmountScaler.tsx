@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 import {
   amountFactor,
   cupOf,
+  hasCups,
   riceMl,
   type AmountScalerConfig,
 } from "@/lib/amountScaling";
-import { formatCount } from "@/lib/dishScaling";
+import { formatCount, formatKitchenVolume, toTsp } from "@/lib/dishScaling";
 
 interface AmountInput {
   amount: string;
@@ -42,7 +43,7 @@ export function useAmountState(
       const raw = localStorage.getItem(key);
       if (!raw) return;
       const saved = JSON.parse(raw) as AmountInput;
-      const cupOk = config.cupOptions.some((c) => c.id === saved.cupId);
+      const cupOk = !hasCups(config) || (config.cupOptions ?? []).some((c) => c.id === saved.cupId);
       if (typeof saved.amount === "string" && cupOk) setInput(saved);
     } catch {
       /* ignore */
@@ -82,9 +83,15 @@ export default function AmountScaler({
   config: AmountScalerConfig;
   state: AmountState;
 }) {
+  const cups = hasCups(config);
   const cup = cupOf(config, state.input.cupId);
-  const ml = state.valid ? riceMl(config, state.value, cup.id) : 0;
-  const factor = state.valid ? amountFactor(config, state.value, cup.id) : 1;
+  const factor = state.valid ? amountFactor(config, state.value, state.input.cupId) : 1;
+  const ml = state.valid && cup ? riceMl(config, state.value, cup.id) : 0;
+  const noun = config.unitNoun
+    ? state.value === 1
+      ? config.unitNoun.singular
+      : config.unitNoun.plural
+    : "";
 
   return (
     <section
@@ -92,23 +99,22 @@ export default function AmountScaler({
       aria-labelledby="amount-scaler-heading"
     >
       <h2 id="amount-scaler-heading" className="font-display text-xl font-semibold mb-1">
-        Scale by rice
+        {config.title}
       </h2>
       <p className="text-sm text-stone-500 dark:text-stone-400 mb-4 leading-snug">
-        Enter how much rice you are cooking. Everything else adjusts and is shown in
-        cups and spoons.
+        {config.intro}
       </p>
 
       <div className="flex flex-wrap items-end gap-3">
         <div className="flex-1 min-w-[120px]">
           <label
-            htmlFor="rice-amount"
+            htmlFor="amount-input"
             className="block text-sm text-stone-600 dark:text-stone-400 mb-1"
           >
             {config.inputLabel}
           </label>
           <input
-            id="rice-amount"
+            id="amount-input"
             type="number"
             min={0}
             step="any"
@@ -118,26 +124,28 @@ export default function AmountScaler({
             className={fieldClass}
           />
         </div>
-        <div className="flex-[2] min-w-[200px]">
-          <label
-            htmlFor="rice-cup"
-            className="block text-sm text-stone-600 dark:text-stone-400 mb-1"
-          >
-            Which cup?
-          </label>
-          <select
-            id="rice-cup"
-            value={state.input.cupId}
-            onChange={(e) => state.setCup(e.target.value)}
-            className={fieldClass}
-          >
-            {config.cupOptions.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.label}
-              </option>
-            ))}
-          </select>
-        </div>
+        {cups && (
+          <div className="flex-[2] min-w-[200px]">
+            <label
+              htmlFor="amount-cup"
+              className="block text-sm text-stone-600 dark:text-stone-400 mb-1"
+            >
+              Which cup?
+            </label>
+            <select
+              id="amount-cup"
+              value={state.input.cupId}
+              onChange={(e) => state.setCup(e.target.value)}
+              className={fieldClass}
+            >
+              {(config.cupOptions ?? []).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         <button
           type="button"
           onClick={state.reset}
@@ -151,24 +159,44 @@ export default function AmountScaler({
 
       <div className="mt-4 text-sm" aria-live="polite">
         {state.valid ? (
-          <p className="text-stone-700 dark:text-stone-300 leading-relaxed">
-            That is about{" "}
-            <strong className="font-semibold">{Math.round(ml)} mL</strong> of dry rice (
-            {formatCount(ml / 240)} standard cups). Everything below is scaled{" "}
-            <strong className="font-semibold">×{factor.toFixed(2)}</strong> compared with the
-            recipe as written.
-          </p>
+          cups ? (
+            <p className="text-stone-700 dark:text-stone-300 leading-relaxed">
+              That is about <strong className="font-semibold">{Math.round(ml)} mL</strong> of dry
+              rice ({formatCount(ml / 240)} standard cups). Everything below is scaled{" "}
+              <strong className="font-semibold">×{factor.toFixed(2)}</strong> compared with the
+              recipe as written.
+            </p>
+          ) : (
+            <p className="text-stone-700 dark:text-stone-300 leading-relaxed">
+              Making{" "}
+              <strong className="font-semibold">
+                {formatCount(state.value)} {noun}
+              </strong>
+              {config.perUnit && (
+                <>
+                  : about{" "}
+                  <strong className="font-semibold">
+                    {Math.round(state.value * config.perUnit.ml)} mL
+                  </strong>{" "}
+                  ({formatKitchenVolume(toTsp((state.value * config.perUnit.ml) / 250, "cup"))}){" "}
+                  {config.perUnit.label}
+                </>
+              )}
+              . Everything below is scaled{" "}
+              <strong className="font-semibold">×{factor.toFixed(2)}</strong> compared with the
+              recipe as written.
+            </p>
+          )
         ) : (
           <p className="text-red-700 dark:text-red-400">
-            Enter an amount of rice greater than zero. Showing the original amounts until
-            then.
+            Enter an amount greater than zero. Showing the original amounts until then.
           </p>
         )}
-        <p className="mt-2 text-amber-800 dark:text-amber-300 leading-relaxed">
-          <strong className="font-semibold">Which cup?</strong> The recipe did not say.
-          Its small amount of water only works with the little 180 mL cup that comes with
-          a rice cooker, so that is the default. See the Notes below.
-        </p>
+        {cups && config.cupNote && (
+          <p className="mt-2 text-amber-800 dark:text-amber-300 leading-relaxed">
+            <strong className="font-semibold">Which cup?</strong> {config.cupNote}
+          </p>
+        )}
       </div>
     </section>
   );

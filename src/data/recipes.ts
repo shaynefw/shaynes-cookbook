@@ -60,6 +60,8 @@ export interface Recipe {
   shopping?: ShoppingItem[];
   notes?: string[];
   source?: RecipeSource;
+  /** Further reading, e.g. for health notes. */
+  references?: RecipeSource[];
 }
 
 const tunaCasseroleScaler: DishScalerConfig = {
@@ -233,6 +235,11 @@ const scallopedBakeScaler: DishScalerConfig = {
 // source's grams to cups using those rough densities; the rice cup is assumed to
 // be the 180 mL rice-cooker cup, which is what the 375 mL of water implies.
 const kimchiSpamRiceScaler: AmountScalerConfig = {
+  title: "Scale by rice",
+  intro:
+    "Enter how much rice you are cooking. Everything else adjusts and is shown in cups and spoons.",
+  cupNote:
+    "The recipe did not say. Its small amount of water only works with the little 180 mL cup that comes with a rice cooker, so that is the default. See the Notes below.",
   inputLabel: "Cups of rice",
   riceName: "jasmine rice",
   reference: 3,
@@ -337,6 +344,61 @@ const gochujangSubstitution: IngredientSubstitution = {
     { name: "PepperScale", url: "https://pepperscale.com/gochujang-substitute/" },
     { name: "Bake It With Love", url: "https://bakeitwithlove.com/gochujang-substitute" },
     { name: "The Daily Meal", url: "https://www.thedailymeal.com/1260819/gochujang-best-replacement/" },
+  ],
+};
+
+// Written for one large mug (1½ cups / 375 mL of water); every amount is linear.
+const gingerGarlicTeaScaler: AmountScalerConfig = {
+  title: "Scale by mugs",
+  intro: "Enter how many large mugs of tea you are making. The amounts below adjust.",
+  inputLabel: "Mugs of tea",
+  unitNoun: { singular: "large mug", plural: "large mugs" },
+  perUnit: { ml: 375, label: "of water" },
+  reference: 1,
+  defaultAmount: 1,
+  ingredients: [
+    {
+      amount: 1.5,
+      unit: "cup",
+      name: "water",
+      smart: true,
+      metric: { perUnit: 250, unit: "mL" },
+      scaleBy: "volume",
+    },
+    {
+      amount: 1,
+      unit: "inch",
+      name: "piece of fresh ginger",
+      note: "thinly sliced",
+      metric: { perUnit: 2.5, unit: "cm" },
+      scaleBy: "volume",
+    },
+    {
+      amount: 1,
+      unit: "each",
+      name: "medium garlic clove",
+      plural: "medium garlic cloves",
+      note: "peeled and lightly crushed",
+      scaleBy: "volume",
+    },
+    {
+      amount: 1,
+      amountMax: 2,
+      unit: "tsp",
+      name: "honey",
+      note: "to taste",
+      smart: true,
+      scaleBy: "volume",
+    },
+    {
+      amount: 1,
+      amountMax: 2,
+      unit: "tsp",
+      name: "lemon juice",
+      note: "optional",
+      smart: true,
+      scaleBy: "volume",
+    },
   ],
 };
 
@@ -713,6 +775,49 @@ const baseRecipes: Recipe[] = [
       "If your rice comes out too firm or too soft, adjust the water a little next time and keep the same amount.",
       "Kimchi and Spam were given in grams (250 g each). The cup amounts use rough densities of about 150 g per cup for kimchi and about 165 g per cup for cubed Spam, so treat them as close guides. A 12 oz (340 g) can of Spam is a little more than you need at the original size.",
       "The source only said to put everything in the rice cooker and press start. The step wording here is mine, and the original author is not known.",
+    ],
+  },
+  {
+    slug: "garlic-ginger-honey-tea",
+    title: "Garlic, Ginger & Honey Tea",
+    description:
+      "A warm tea simmered from fresh ginger and garlic, finished with honey and a little lemon. Enter how many large mugs you are making and every amount adjusts.",
+    prepTime: "—",
+    cookTime: "10–15 min simmer",
+    servings: "1 large mug as written (scales to your mugs)",
+    tags: ["drink", "tea", "wellness", "ginger"],
+    ingredients: renderAmountIngredients(gingerGarlicTeaScaler, 1, ""),
+    steps: [
+      "Wash the ginger and slice it into thin coins. Peel it first if you prefer.",
+      "Peel the garlic and lightly crush it with the flat side of a knife.",
+      "Put the water, ginger and garlic in a small saucepan. Bring to a gentle boil, then turn the heat down.",
+      "Cover and simmer gently for 10–15 minutes.",
+      "Strain into your mug. If a lot of water has boiled away, top it up with a little hot water.",
+      "Let it cool to a comfortable sipping temperature, then stir in the honey and the lemon, if using. You don't need to eat the strained pieces.",
+    ],
+    amountScaler: gingerGarlicTeaScaler,
+    notes: [
+      "A garlic clove means one segment, not the whole bulb. Start with the milder amount of garlic; you can make the next batch stronger.",
+      "Amounts are for large mugs (1½ cups or 375 mL of water each). Use a saucepan big enough for the water you are making.",
+      "Honey and lemon are added after the tea has cooled a little, to taste. Honey must never be given to babies under 1 year old (Mayo Clinic and the CDC both say so).",
+      "This is a comforting drink, not a treatment. Warm honey drinks may help soothe a sore throat and cough (Mayo Clinic), but the NIH's NCCIH says there is very little research on garlic for colds. The amounts here are for flavor, not a medicinal dose.",
+      "Garlic taken by mouth can cause stomach pain, gas and nausea, and some people are allergic, so use less or leave it out if it bothers you. NCCIH also says garlic supplements may increase bleeding risk and advises telling your health care provider if you take blood thinners or aspirin. This tea uses food amounts, but ask your pharmacist if you are unsure.",
+      "For colds, the CDC's basics are rest and plenty of fluids; a warm drink fits right in.",
+    ],
+    source: {
+      name: "Clean Eating Kitchen's garlic tea (proportions adjusted for taste)",
+      url: "https://www.cleaneatingkitchen.com/garlic-tea/",
+    },
+    references: [
+      {
+        name: "Mayo Clinic: Honey, an effective cough remedy?",
+        url: "https://www.mayoclinic.org/symptoms/cough/expert-answers/honey/faq-20058031",
+      },
+      { name: "NCCIH (NIH): Garlic", url: "https://www.nccih.nih.gov/health/garlic" },
+      {
+        name: "CDC: Treating the common cold",
+        url: "https://www.cdc.gov/common-cold/treatment/index.html",
+      },
     ],
   },
 ];

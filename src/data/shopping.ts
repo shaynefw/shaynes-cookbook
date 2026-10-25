@@ -583,6 +583,7 @@ const scallopedBake: ShoppingItem[] = [
       size: 12,
       unit: "each",
       usesWord: "medium eggs",
+      usesWordSingular: "medium egg",
       needed: [{ amount: 4, scaleBy: "volume" }],
     },
   },
@@ -745,6 +746,65 @@ const kimchiSpamRice: ShoppingItem[] = [
   },
 ];
 
+const garlicGingerTea: ShoppingItem[] = [
+  {
+    name: "Fresh ginger",
+    aisle: "Produce",
+    pack: {
+      label: "piece of fresh ginger root (about 4 inches / 10 cm)",
+      plural: "pieces of fresh ginger root (about 4 inches / 10 cm each)",
+      size: 4,
+      unit: "inch",
+      needed: [{ amount: 1, scaleBy: "volume" }],
+    },
+  },
+  {
+    name: "Garlic",
+    aisle: "Produce",
+    pack: {
+      label: "head of garlic (about 10 cloves)",
+      plural: "heads of garlic (about 10 cloves each)",
+      size: 10,
+      unit: "each",
+      usesWord: "medium cloves",
+      usesWordSingular: "medium clove",
+      needed: [{ amount: 1, scaleBy: "volume" }],
+    },
+  },
+  {
+    name: "Lemon",
+    aisle: "Produce",
+    buy: "1 lemon",
+    usesScaled: {
+      needed: [{ amount: 1, scaleBy: "volume" }],
+      unit: "tsp",
+      smart: true,
+      rangeFactor: 2,
+    },
+    note: "Juice only, to taste.",
+    optional: true,
+  },
+  {
+    name: "Honey",
+    aisle: "Baking",
+    buy: "1 jar or squeeze bottle",
+    usesScaled: {
+      needed: [{ amount: 1, scaleBy: "volume" }],
+      unit: "tsp",
+      smart: true,
+      rangeFactor: 2,
+    },
+    note: "Not for babies under 1 year old.",
+  },
+  {
+    name: "Water",
+    aisle: "Other",
+    buy: "From the tap",
+    usesScaled: { needed: [{ amount: 1.5, scaleBy: "volume" }], unit: "cup", smart: true },
+    pantry: true,
+  },
+];
+
 export const shoppingLists: Record<string, ShoppingItem[]> = {
   "maple-walnut-banana-bread": bananaBread,
   "okinawan-lentil-sweet-potato-stew": okinawanStew,
@@ -754,4 +814,5 @@ export const shoppingLists: Record<string, ShoppingItem[]> = {
   "old-fashioned-tuna-noodle-casserole": tunaCasserole,
   "scalloped-vegetable-bake": scallopedBake,
   "kimchi-spam-rice-cooker-rice": kimchiSpamRice,
+  "garlic-ginger-honey-tea": garlicGingerTea,
 };
