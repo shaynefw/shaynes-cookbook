@@ -242,6 +242,22 @@ const kimchiSpamRiceScaler: AmountScalerConfig = {
     "The recipe did not say. Its small amount of water only works with the little 180 mL cup that comes with a rice cooker, so that is the default. See the Notes below.",
   inputLabel: "Cups of rice",
   riceName: "jasmine rice",
+  riceTypes: [
+    {
+      id: "jasmine",
+      label: "Jasmine rice (recipe as written)",
+      riceName: "jasmine rice",
+      note: "These are the amounts from the original recipe. It has not been tested yet.",
+    },
+    {
+      id: "parboiled",
+      label: "Parboiled rice (tested)",
+      riceName: "parboiled rice",
+      note: "1 cup of rice needs 1⅛ cups of water, using the same cup for the rice and the water. Everything else scales the same way.",
+      overrides: [{ key: "water", ratio: 1.125 }],
+    },
+  ],
+  defaultRiceTypeId: "jasmine",
   reference: 3,
   defaultAmount: 3,
   referenceCupId: "cooker",
@@ -264,6 +280,7 @@ const kimchiSpamRiceScaler: AmountScalerConfig = {
     },
     { amount: 2, unit: "tbsp", name: "sesame oil", smart: true, scaleBy: "volume" },
     {
+      key: "water",
       amount: 1.5,
       unit: "cup",
       name: "water",
@@ -754,7 +771,7 @@ const baseRecipes: Recipe[] = [
     slug: "kimchi-spam-rice-cooker-rice",
     title: "Kimchi & Spam Rice Cooker Rice",
     description:
-      "A savory, spicy one-button meal: jasmine rice, gochujang, kimchi and cubed Spam all go in the rice cooker together. Top it with a fried egg, spring onion and chili crunch. Enter how much rice you are cooking and every amount adjusts, in cups and spoons.",
+      "A savory, spicy one-button meal: jasmine rice, gochujang, kimchi and cubed Spam all go in the rice cooker together. Top it with a fried egg, spring onion and chili crunch. Enter how much rice you are cooking and every amount adjusts, in cups and spoons. Includes water amounts for parboiled rice.",
     prepTime: "—",
     cookTime: "1 rice cooker cycle",
     servings: "Scales to the rice you cook (3 rice-cooker cups as written)",
@@ -772,6 +789,7 @@ const baseRecipes: Recipe[] = [
     substitution: gochujangSubstitution,
     notes: [
       "Which cup? The recipe I was given said \"3 cups\" of rice with 375 mL of water and did not say which cup. That much water only makes sense for the small 180 mL cup that comes with a rice cooker (about 1 part water to 1 part rice is a common rice-cooker ratio for jasmine, though yours may differ), so the page assumes that cup. If you measure rice in standard 240 mL cups, switch the cup size above and every amount scales up to match.",
+      "Rice types: parboiled rice has been tested, at 1 cup of rice to 1⅛ cups of water (the same cup for both). That is quite a bit more water than the recipe as written, which has not been tested. Other rices have not been tried yet.",
       "If your rice comes out too firm or too soft, adjust the water a little next time and keep the same amount.",
       "Kimchi and Spam were given in grams (250 g each). The cup amounts use rough densities of about 150 g per cup for kimchi and about 165 g per cup for cubed Spam, so treat them as close guides. A 12 oz (340 g) can of Spam is a little more than you need at the original size.",
       "The source only said to put everything in the rice cooker and press start. The step wording here is mine, and the original author is not known.",

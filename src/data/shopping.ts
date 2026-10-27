@@ -681,9 +681,10 @@ const kimchiSpamRice: ShoppingItem[] = [
   {
     name: "Jasmine rice",
     aisle: "Pasta & dry goods",
+    variations: { parboiled: { name: "Parboiled rice" } },
     pack: {
-      label: "bag of jasmine rice (2 lb / 900 g or larger)",
-      plural: "bags of jasmine rice (2 lb / 900 g or larger)",
+      label: "bag of rice (2 lb / 900 g or larger)",
+      plural: "bags of rice (2 lb / 900 g or larger)",
       size: 5,
       unit: "cup",
       needed: [{ amount: 2.25, scaleBy: "volume" }],
@@ -742,6 +743,7 @@ const kimchiSpamRice: ShoppingItem[] = [
     aisle: "Other",
     buy: "From the tap",
     usesScaled: { needed: [{ amount: 1.5, scaleBy: "volume" }], unit: "cup", smart: true },
+    variations: { parboiled: { uses: "1⅛ times the rice, measured in the same cup" } },
     pantry: true,
   },
 ];

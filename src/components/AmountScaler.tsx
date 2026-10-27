@@ -5,7 +5,9 @@ import {
   amountFactor,
   cupOf,
   hasCups,
+  hasTypes,
   riceMl,
+  typeOf,
   type AmountScalerConfig,
 } from "@/lib/amountScaling";
 import { formatCount, formatKitchenVolume, toTsp } from "@/lib/dishScaling";
@@ -13,6 +15,8 @@ import { formatCount, formatKitchenVolume, toTsp } from "@/lib/dishScaling";
 interface AmountInput {
   amount: string;
   cupId: string;
+  /** Which kind of rice (when the recipe has rice types). */
+  typeId: string;
 }
 
 export interface AmountState {
@@ -22,6 +26,7 @@ export interface AmountState {
   valid: boolean;
   setAmount: (v: string) => void;
   setCup: (id: string) => void;
+  setType: (id: string) => void;
   reset: () => void;
 }
 
@@ -33,6 +38,7 @@ export function useAmountState(
   const defaults: AmountInput = {
     amount: String(config?.defaultAmount ?? 1),
     cupId: config?.defaultCupId ?? "",
+    typeId: config?.defaultRiceTypeId ?? "",
   };
   const [input, setInput] = useState<AmountInput>(defaults);
   const key = `amount-scaler-${slug}`;
@@ -44,7 +50,8 @@ export function useAmountState(
       if (!raw) return;
       const saved = JSON.parse(raw) as AmountInput;
       const cupOk = !hasCups(config) || (config.cupOptions ?? []).some((c) => c.id === saved.cupId);
-      if (typeof saved.amount === "string" && cupOk) setInput(saved);
+      const typeOk = !hasTypes(config) || (config.riceTypes ?? []).some((t) => t.id === saved.typeId);
+      if (typeof saved.amount === "string" && cupOk && typeOk) setInput({ ...defaults, ...saved });
     } catch {
       /* ignore */
     }
@@ -67,6 +74,7 @@ export function useAmountState(
     valid: Number.isFinite(value) && value > 0,
     setAmount: (v) => persist({ ...input, amount: v }),
     setCup: (id) => persist({ ...input, cupId: id }),
+    setType: (id) => persist({ ...input, typeId: id }),
     reset: () => persist(defaults),
   };
 }
@@ -84,6 +92,8 @@ export default function AmountScaler({
   state: AmountState;
 }) {
   const cups = hasCups(config);
+  const types = hasTypes(config);
+  const riceType = typeOf(config, state.input.typeId);
   const cup = cupOf(config, state.input.cupId);
   const factor = state.valid ? amountFactor(config, state.value, state.input.cupId) : 1;
   const ml = state.valid && cup ? riceMl(config, state.value, cup.id) : 0;
@@ -124,6 +134,28 @@ export default function AmountScaler({
             className={fieldClass}
           />
         </div>
+        {types && (
+          <div className="flex-[2] min-w-[200px]">
+            <label
+              htmlFor="amount-type"
+              className="block text-sm text-stone-600 dark:text-stone-400 mb-1"
+            >
+              Rice type
+            </label>
+            <select
+              id="amount-type"
+              value={state.input.typeId}
+              onChange={(e) => state.setType(e.target.value)}
+              className={fieldClass}
+            >
+              {(config.riceTypes ?? []).map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         {cups && (
           <div className="flex-[2] min-w-[200px]">
             <label
@@ -190,6 +222,11 @@ export default function AmountScaler({
         ) : (
           <p className="text-red-700 dark:text-red-400">
             Enter an amount greater than zero. Showing the original amounts until then.
+          </p>
+        )}
+        {types && riceType?.note && (
+          <p className="mt-2 text-stone-600 dark:text-stone-300 leading-relaxed">
+            <strong className="font-semibold">{riceType.label}:</strong> {riceType.note}
           </p>
         )}
         {cups && config.cupNote && (

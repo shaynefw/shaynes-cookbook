@@ -55,7 +55,7 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
   const amountCfg = recipe.amountScaler;
   const amountIngredients =
     amountCfg && amount.valid
-      ? renderAmountIngredients(amountCfg, amount.value, amount.input.cupId)
+      ? renderAmountIngredients(amountCfg, amount.value, amount.input.cupId, amount.input.typeId)
       : null;
 
   const activeIngredients =
@@ -146,9 +146,13 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
       ? recipe.variations[selectedVariation]
       : null;
 
+  // Portion size, or the rice type for recipes that have one, picks the shopping text.
+  const shoppingVariation =
+    activeVariation?.name ?? (amountCfg?.riceTypes ? amount.input.typeId : undefined);
+
   const shoppingRows = recipe.shopping
     ? resolveShopping(recipe.shopping, {
-        variation: activeVariation?.name,
+        variation: shoppingVariation,
         factors:
           scaler && isValidDish(dish.dims, scaler.headroom)
             ? scaleFactors(dish.dims, scaler.reference, scaler.headroom)
@@ -237,7 +241,7 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
           <ShoppingList
             slug={recipe.slug}
             title={recipe.title}
-            variation={activeVariation?.name ?? ""}
+            variation={shoppingVariation ?? ""}
             rows={shoppingRows}
           />
         )}

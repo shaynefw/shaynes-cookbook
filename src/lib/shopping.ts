@@ -74,7 +74,7 @@ export interface ShoppingItem {
     rangeFactor?: number;
   };
   /** Different text for a chosen portion size, keyed by the variation's name. */
-  variations?: Record<string, { buy?: string; uses?: string }>;
+  variations?: Record<string, { name?: string; buy?: string; uses?: string }>;
 }
 
 export interface ShoppingRow {
@@ -128,10 +128,6 @@ export function resolveShopping(
           item.pack.unit === "can" ? undefined : formatAmount(total, item.pack.unit);
       }
       buy = `${count} × ${count === 1 ? item.pack.label : item.pack.plural}`;
-    } else if (ctx.variation && item.variations?.[ctx.variation]) {
-      const v = item.variations[ctx.variation];
-      buy = v.buy ?? buy;
-      uses = v.uses ?? uses;
     }
 
     // A scaled "Recipe uses" amount wins over any static or pack-derived text.
@@ -147,9 +143,18 @@ export function resolveShopping(
           : formatAmount(total, u);
     }
 
+    // A chosen portion size or rice type has the final say on name, amount and text.
+    let name = item.name;
+    const v = ctx.variation ? item.variations?.[ctx.variation] : undefined;
+    if (v) {
+      name = v.name ?? name;
+      buy = v.buy ?? buy;
+      uses = v.uses ?? uses;
+    }
+
     return {
-      key: `${item.aisle}:${item.name}`,
-      name: item.name,
+      key: `${item.aisle}:${name}`,
+      name,
       aisle: item.aisle,
       buy,
       uses,

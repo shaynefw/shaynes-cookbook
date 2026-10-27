@@ -35,6 +35,8 @@ export interface ScalableIngredient {
   smart?: boolean;
   /** Adds "(about 250 g)" or "(about 375 mL)", scaled with the amount. */
   metric?: { perUnit: number; unit: "g" | "mL" | "cm" };
+  /** Lets a rice type override this ingredient's amount (e.g. "water"). */
+  key?: string;
   /** Name to use when the amount isn't 1 (whole items): "garlic cloves". */
   plural?: string;
   /** Top of a range ("1–2 tsp"): `amount` is the low end. Volume units only. */
