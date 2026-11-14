@@ -59,6 +59,12 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
+            // Catch the install prompt early; the Install button picks it up once React loads.
+            __html: `window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__bip=e;});`,
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
             __html: `
               (function() {
                 var t = localStorage.getItem('theme');

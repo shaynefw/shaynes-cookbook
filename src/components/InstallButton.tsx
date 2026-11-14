@@ -8,17 +8,28 @@ interface BeforeInstallPromptEvent extends Event {
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
 }
 
+// The layout's inline script catches the event early and stores it here, in case
+// it fires before React has loaded.
+type EarlyWindow = Window & { __bip?: BeforeInstallPromptEvent };
+
 export default function InstallButton() {
   const [promptEvent, setPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
 
   useEffect(() => {
     if (window.matchMedia("(display-mode: standalone)").matches) return;
 
+    const early = (window as EarlyWindow).__bip;
+    if (early) setPromptEvent(early);
+
     const onPrompt = (e: Event) => {
       e.preventDefault();
+      (window as EarlyWindow).__bip = e as BeforeInstallPromptEvent;
       setPromptEvent(e as BeforeInstallPromptEvent);
     };
-    const onInstalled = () => setPromptEvent(null);
+    const onInstalled = () => {
+      (window as EarlyWindow).__bip = undefined;
+      setPromptEvent(null);
+    };
 
     window.addEventListener("beforeinstallprompt", onPrompt);
     window.addEventListener("appinstalled", onInstalled);
@@ -30,9 +41,14 @@ export default function InstallButton() {
 
   async function install() {
     if (!promptEvent) return;
-    await promptEvent.prompt();
-    await promptEvent.userChoice.catch(() => {});
+    try {
+      await promptEvent.prompt();
+      await promptEvent.userChoice;
+    } catch {
+      /* the browser refused or the user closed it */
+    }
     // The event can be used only once, so hide the button either way.
+    (window as EarlyWindow).__bip = undefined;
     setPromptEvent(null);
   }
 
@@ -43,7 +59,7 @@ export default function InstallButton() {
       onClick={install}
       aria-label="Install app"
       title="Install app"
-      className="h-10 px-3 flex items-center justify-center gap-1.5 rounded-full
+      className="h-10 px-2.5 flex items-center justify-center gap-1.5 rounded-full
         hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors
         text-sm font-semibold select-none"
     >

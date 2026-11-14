@@ -13,13 +13,13 @@ export default function Header() {
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link
           href="/"
-          className="flex items-center gap-2.5 group"
+          className="flex items-center gap-2.5 group min-w-0"
           aria-label="Shayne's Cookbook home"
         >
           <span className="transition-transform group-hover:-rotate-6">
             <BrandMark size={34} />
           </span>
-          <span className="font-display text-xl font-semibold tracking-tight">
+          <span className="font-display text-lg sm:text-xl font-semibold tracking-tight truncate">
             Shayne&apos;s Cookbook
           </span>
         </Link>

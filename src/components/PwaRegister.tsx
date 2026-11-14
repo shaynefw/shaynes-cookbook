@@ -11,7 +11,12 @@ export default function PwaRegister() {
     if (process.env.NODE_ENV !== "production") {
       navigator.serviceWorker
         .getRegistrations()
-        .then((regs) => regs.forEach((r) => r.unregister()))
+        .then((regs) =>
+          regs
+            // Only our own worker; leave other apps on localhost alone.
+            .filter((r) => ((r.active ?? r.waiting ?? r.installing)?.scriptURL ?? "").endsWith("/sw.js"))
+            .forEach((r) => r.unregister())
+        )
         .catch(() => {});
       if ("caches" in window) {
         caches
@@ -27,7 +32,7 @@ export default function PwaRegister() {
     const register = () => {
       navigator.serviceWorker
         .register("/sw.js", { scope: "/", updateViaCache: "none" })
-        .catch(() => {});
+        .catch((err) => console.warn("Service worker not registered:", err));
     };
     if (document.readyState === "complete") {
       register();

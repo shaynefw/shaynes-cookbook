@@ -13,6 +13,8 @@ export default function IosInstallHint() {
     const isIos =
       /iPhone|iPad|iPod/.test(ua) ||
       (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    // Other iOS browsers and in-app browsers have different steps, so stay quiet there.
+    const otherBrowser = /CriOS|FxiOS|EdgiOS|OPiOS|FBAN|FBAV|Instagram|Line\/|Twitter/.test(ua);
     const standalone =
       (navigator as Navigator & { standalone?: boolean }).standalone === true ||
       window.matchMedia("(display-mode: standalone)").matches;
@@ -20,7 +22,7 @@ export default function IosInstallHint() {
     try {
       dismissed = localStorage.getItem(DISMISS_KEY) === "1";
     } catch {}
-    setShow(isIos && !standalone && !dismissed);
+    setShow(isIos && !otherBrowser && !standalone && !dismissed);
   }, []);
 
   function dismiss() {

@@ -17,8 +17,8 @@ export default function OfflinePage() {
         You&apos;re offline
       </h1>
       <p className="mt-4 text-stone-600 dark:text-stone-300">
-        This page is not saved on your device yet. Recipes you opened before are still
-        available.
+        This page is not saved on your device. Your recipes are saved, so you can still open
+        them from the home page.
       </p>
       <Link
         href="/"

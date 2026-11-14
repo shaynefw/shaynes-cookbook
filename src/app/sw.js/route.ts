@@ -23,17 +23,19 @@ function buildServiceWorker(): string {
 var BUILD_ID = ${JSON.stringify(BUILD_ID)};
 var PRECACHE = ${JSON.stringify(precache)};
 
-// Pages cache is replaced on every build. Static cache survives builds,
-// because hashed /_next/static files never change.
+// Both caches are rebuilt on every build and the old ones are deleted when
+// the new worker activates, so the caches cannot grow from deploy to deploy.
 var PAGES_CACHE = "cookbook-pages-" + BUILD_ID;
-var STATIC_CACHE = "cookbook-static-v1";
+var STATIC_CACHE = "cookbook-static-" + BUILD_ID;
+// If these two cannot be saved, the install fails and the old worker keeps running.
+var REQUIRED = ["/", "/offline"];
 var NAV_TIMEOUT_MS = 4000;
 
 function noop() {}
 
 // Only store good, same-origin responses.
 function isCacheable(response) {
-  return response && response.status === 200 && response.type === "basic";
+  return response && response.status === 200 && response.type === "basic" && !response.redirected;
 }
 
 // Store a response; never throw (quota errors must not break a page).
@@ -50,16 +52,76 @@ function pageKey(url) {
   return u.origin + u.pathname;
 }
 
+// List the script, style and font files ("static/chunks/...") that a page or
+// stylesheet mentions, so a saved page still works with no network.
+// Works on HTML, on the data Next embeds in it, and on CSS.
+var STOP = String.fromCharCode(32, 34, 39, 40, 41, 60, 62, 92, 10, 13, 9, 44, 59, 91, 93, 123, 125, 38);
+function assetUrls(text) {
+  var found = {};
+  var from = 0;
+  while (true) {
+    var i = text.indexOf("static/", from);
+    if (i === -1) break;
+    from = i + 7;
+    var rest = text.slice(from, from + 7);
+    if (rest.indexOf("chunks/") !== 0 && rest.indexOf("css/") !== 0 && rest.indexOf("media/") !== 0) continue;
+    var end = i;
+    while (end < text.length && STOP.indexOf(text.charAt(end)) === -1) end++;
+    var path = text.slice(i, end);
+    if (path.charAt(path.length - 1) === "/") continue; // a folder, not a file
+    found["/_next/" + path] = true;
+  }
+  return Object.keys(found);
+}
+
 self.addEventListener("install", function (event) {
   event.waitUntil(
     (async function () {
-      var cache = await caches.open(PAGES_CACHE);
+      var pages = await caches.open(PAGES_CACHE);
+      var statics = await caches.open(STATIC_CACHE);
+      var queue = [];
+      var seen = {};
+
+      // 1. Save every page, and note the files each one needs.
       for (var i = 0; i < PRECACHE.length; i++) {
-        // One failed URL must not abort the install.
+        var url = PRECACHE[i];
+        var ok = false;
         try {
-          await cache.add(new Request(PRECACHE[i], { cache: "reload" }));
+          var res = await fetch(new Request(url, { cache: "reload" }));
+          if (res && res.status === 200) {
+            await pages.put(url, res.clone());
+            ok = true;
+            if (url.indexOf("/icons/") !== 0 && url.indexOf(".webmanifest") === -1) {
+              assetUrls(await res.text()).forEach(function (a) {
+                if (!seen[a]) { seen[a] = true; queue.push(a); }
+              });
+            }
+          }
         } catch (err) {}
+        // A missing optional page is fine; a missing required one fails the install.
+        if (!ok && REQUIRED.indexOf(url) !== -1) throw new Error("Could not save " + url);
       }
+
+      // 2. Save those files. Stylesheets can point to more files (fonts).
+      // A 404 is skipped, but a network error fails the install, so a half-saved
+      // copy never replaces a working one.
+      var failed = 0;
+      for (var j = 0; j < queue.length; j++) {
+        try {
+          var asset = await fetch(new Request(queue[j]));
+          if (asset && asset.status === 200) {
+            await statics.put(queue[j], asset.clone());
+            if (queue[j].split("?")[0].slice(-4) === ".css") {
+              assetUrls(await asset.text()).forEach(function (a) {
+                if (!seen[a]) { seen[a] = true; queue.push(a); }
+              });
+            }
+          }
+        } catch (err) {
+          failed++;
+        }
+      }
+      if (failed > 0) throw new Error("Could not save " + failed + " file(s)");
       await self.skipWaiting();
     })()
   );
@@ -72,7 +134,8 @@ self.addEventListener("activate", function (event) {
       await Promise.all(
         names
           .filter(function (n) {
-            return n.indexOf("cookbook-pages-") === 0 && n !== PAGES_CACHE;
+            var ours = n.indexOf("cookbook-pages-") === 0 || n.indexOf("cookbook-static-") === 0;
+            return ours && n !== PAGES_CACHE && n !== STATIC_CACHE;
           })
           .map(function (n) { return caches.delete(n); })
       );
@@ -100,37 +163,42 @@ function handleNavigation(event) {
 
   return Promise.race([network, timeout])
     .then(function (response) {
-      if (response) return response;
-      // Slow network: use the saved page; with none saved, keep waiting.
-      return caches.match(key).then(function (cached) { return cached || network; });
-    })
-    .catch(function () {
-      // Network failed: saved page, else the offline page.
+      if (response && response.status < 500) return response;
+      // Slow network, or a server error: use the saved page if there is one.
       return caches.match(key).then(function (cached) {
-        return (
-          cached ||
-          caches.match(self.location.origin + "/offline") ||
-          new Response("You are offline.", { status: 503 })
-        );
+        return cached || response || network;
       });
+    })
+    .catch(async function () {
+      // Network failed: saved page, else the offline page, else plain text.
+      var cached = await caches.match(key);
+      if (cached) return cached;
+      var offline = await caches.match(self.location.origin + "/offline");
+      return (
+        offline ||
+        new Response("You are offline.", { status: 503, headers: { "Content-Type": "text/plain" } })
+      );
     });
 }
 
 // Static files: cache first. Fill the cache on a miss.
-async function handleStatic(request) {
-  var cached = await caches.match(request);
+async function handleStatic(event) {
+  var request = event.request;
+  var cached = await caches.match(request, { ignoreVary: true });
   if (cached) return cached;
   var response = await fetch(request);
-  if (isCacheable(response)) put(STATIC_CACHE, request, response.clone());
+  // waitUntil keeps the worker alive until the copy is written.
+  if (isCacheable(response)) event.waitUntil(put(STATIC_CACHE, request, response.clone()));
   return response;
 }
 
 // Everything else on this site (RSC payloads, images): network first.
 // The key is the full URL, because RSC requests differ by query string.
-async function handleOther(request) {
+async function handleOther(event) {
+  var request = event.request;
   try {
     var response = await fetch(request);
-    if (isCacheable(response)) put(PAGES_CACHE, request, response.clone());
+    if (isCacheable(response)) event.waitUntil(put(PAGES_CACHE, request, response.clone()));
     return response;
   } catch (err) {
     var cached = await caches.match(request);
@@ -155,9 +223,9 @@ self.addEventListener("fetch", function (event) {
     url.pathname.indexOf("/icons/") === 0 ||
     /\\.(woff2?|ttf|otf|eot)$/i.test(url.pathname)
   ) {
-    event.respondWith(handleStatic(request));
+    event.respondWith(handleStatic(event));
   } else {
-    event.respondWith(handleOther(request));
+    event.respondWith(handleOther(event));
   }
 });
 `;
