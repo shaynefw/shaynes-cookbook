@@ -807,6 +807,75 @@ const garlicGingerTea: ShoppingItem[] = [
   },
 ];
 
+const lentilBread: ShoppingItem[] = [
+  {
+    name: "Red lentils",
+    aisle: "Pasta & dry goods",
+    pack: {
+      label: "bag of red lentils (about 450 g / 1 lb)",
+      plural: "bags of red lentils (about 450 g / 1 lb each)",
+      size: 2.25,
+      unit: "cup",
+      needed: [{ amount: 2, scaleBy: "volume" }],
+    },
+    usesScaled: { needed: [{ amount: 2, scaleBy: "volume" }], unit: "cup", smart: true },
+    note: "Soak overnight before you bake.",
+  },
+  {
+    name: "Eggs",
+    aisle: "Dairy & eggs",
+    pack: {
+      label: "carton of 6 or 12 eggs",
+      plural: "cartons of 6 or 12 eggs",
+      size: 12,
+      unit: "each",
+      usesWord: "large eggs",
+      usesWordSingular: "large egg",
+      needed: [{ amount: 3, scaleBy: "volume" }],
+    },
+  },
+  {
+    name: "Whole psyllium husk",
+    aisle: "Baking",
+    buy: "1 container",
+    usesScaled: { needed: [{ amount: 3, scaleBy: "volume" }], unit: "tbsp", smart: true },
+    note: "Buy whole husk, not powder or capsules. Look in the baking or health food aisle.",
+  },
+  {
+    name: "Baking powder",
+    aisle: "Baking",
+    buy: "1 tin",
+    usesScaled: { needed: [{ amount: 2, scaleBy: "volume" }], unit: "tsp", smart: true },
+  },
+  {
+    name: "Seeds",
+    aisle: "Baking",
+    buy: "1 small bag of sesame, flax or poppy seeds",
+    uses: "to taste, for the top",
+    optional: true,
+  },
+  {
+    name: "Parchment paper",
+    aisle: "Other",
+    buy: "1 roll",
+    uses: "to line the pan",
+  },
+  {
+    name: "Olive oil",
+    aisle: "Sauces & condiments",
+    buy: "Pantry staple",
+    usesScaled: { needed: [{ amount: 2, scaleBy: "volume" }], unit: "tbsp", smart: true },
+    pantry: true,
+  },
+  {
+    name: "Salt",
+    aisle: "Spices & seasonings",
+    buy: "Pantry staple",
+    usesScaled: { needed: [{ amount: 1, scaleBy: "volume" }], unit: "tsp", smart: true },
+    pantry: true,
+  },
+];
+
 export const shoppingLists: Record<string, ShoppingItem[]> = {
   "maple-walnut-banana-bread": bananaBread,
   "okinawan-lentil-sweet-potato-stew": okinawanStew,
@@ -817,4 +886,5 @@ export const shoppingLists: Record<string, ShoppingItem[]> = {
   "scalloped-vegetable-bake": scallopedBake,
   "kimchi-spam-rice-cooker-rice": kimchiSpamRice,
   "garlic-ginger-honey-tea": garlicGingerTea,
+  "lentil-bread": lentilBread,
 };

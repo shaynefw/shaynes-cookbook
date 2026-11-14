@@ -261,11 +261,15 @@ export default function DishScaler({
               <strong className="font-semibold">
                 {formatCups(f.cups)} cups
               </strong>{" "}
-              of casserole (leaving {config.headroom}″ below the rim) and serves
-              about{" "}
+              of {config.contentNoun ?? "casserole"}
+              {config.headroom > 0
+                ? ` (leaving ${config.headroom}″ below the rim)`
+                : ""}{" "}
+              and {config.yieldNoun ? "makes" : "serves"} about{" "}
               <strong className="font-semibold">
                 {estimateServings(config, f.volume)}
               </strong>
+              {config.yieldNoun ? ` ${config.yieldNoun}` : ""}
               . The filling is scaled ×{f.volume.toFixed(2)} and the toppings ×
               {f.area.toFixed(2)} compared with the original{" "}
               {config.reference.shape === "round"

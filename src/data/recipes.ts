@@ -419,6 +419,91 @@ const gingerGarlicTeaScaler: AmountScalerConfig = {
   ],
 };
 
+// Reference amounts, for the 9.5 x 5.5 x 3 in pan.
+const lentilBreadSubstitution: IngredientSubstitution = {
+  title: "Swaps",
+  replaces: "the baking powder or some of the water",
+  options: [
+    {
+      name: "No baking powder",
+      replaces: "the 2 tsp of baking powder",
+      parts: [
+        { amount: 1, unit: "tsp", name: "baking soda", smart: true, scaleBy: "volume" },
+        { amount: 1, unit: "tbsp", name: "lemon juice or cider vinegar", smart: true, scaleBy: "volume" },
+      ],
+    },
+    {
+      name: "Softer crumb",
+      replaces: "¼ cup of the ¾ cup of water",
+      parts: [
+        { amount: 0.25, unit: "cup", name: "Greek yogurt", smart: true, scaleBy: "volume" },
+        { amount: 0.5, unit: "cup", name: "water", smart: true, scaleBy: "volume" },
+      ],
+      note: "Use these in place of the full amount of water.",
+    },
+  ],
+  caution:
+    "Add the baking soda mixture the same way as the baking powder, at the end, with the quick 5 second blend.",
+};
+
+// Reference pan: 9.5 x 5.5 x 3 in. Headroom is 0 because the batter fills the
+// same share of any pan, so amounts scale with the pan's volume (L x W x D).
+const lentilBreadScaler: DishScalerConfig = {
+  reference: { shape: "rectangle", length: 9.5, width: 5.5, depth: 3 },
+  referenceServings: 16,
+  yieldNoun: "slices",
+  contentNoun: "batter",
+  headroom: 0,
+  defaultPresetId: "original",
+  presets: [
+    {
+      id: "original",
+      label: "Original: 9.5″ × 5.5″ × 3″ loaf pan",
+      dims: { shape: "rectangle", length: 9.5, width: 5.5, depth: 3 },
+    },
+    {
+      id: "9x5",
+      label: "9″ × 5″ × 3″ loaf pan",
+      dims: { shape: "rectangle", length: 9, width: 5, depth: 3 },
+    },
+    {
+      id: "8.5x4.5",
+      label: "8.5″ × 4.5″ × 2.5″ loaf pan",
+      dims: { shape: "rectangle", length: 8.5, width: 4.5, depth: 2.5 },
+    },
+  ],
+  bakeNotes: {
+    same: "Your batter will be about as deep as in the original pan, so bake 50–60 minutes at 355°F (about 180°C), until a toothpick comes out clean.",
+    deeper:
+      "Your batter will be deeper than in the original pan, so it may need 10–20 minutes longer. Start testing with a toothpick at about 55 minutes. If the top browns too fast, cover it loosely with foil.",
+    shallower:
+      "Your batter will be shallower than in the original pan, so start testing with a toothpick at about 40 minutes.",
+  },
+  ingredients: [
+    {
+      amount: 2,
+      unit: "cup",
+      name: "dry red lentils",
+      note: "soaked overnight, drained and rinsed",
+      smart: true,
+      scaleBy: "volume",
+    },
+    { amount: 3, unit: "each", name: "large egg", plural: "large eggs", scaleBy: "volume" },
+    { amount: 0.75, unit: "cup", name: "water", smart: true, scaleBy: "volume" },
+    { amount: 2, unit: "tbsp", name: "olive oil", smart: true, scaleBy: "volume" },
+    { amount: 1, unit: "tsp", name: "salt", smart: true, scaleBy: "volume" },
+    { amount: 3, unit: "tbsp", name: "whole psyllium husk", smart: true, scaleBy: "volume" },
+    { amount: 2, unit: "tsp", name: "baking powder", smart: true, scaleBy: "volume" },
+    {
+      amount: 0,
+      unit: "tsp",
+      name: "",
+      text: "seeds for the top (sesame, flax, poppy), to taste",
+      scaleBy: "volume",
+    },
+  ],
+};
+
 const baseRecipes: Recipe[] = [
   {
     slug: "maple-walnut-banana-bread",
@@ -835,6 +920,44 @@ const baseRecipes: Recipe[] = [
       {
         name: "CDC: Treating the common cold",
         url: "https://www.cdc.gov/common-cold/treatment/index.html",
+      },
+    ],
+  },
+  {
+    slug: "lentil-bread",
+    title: "Lentil Bread",
+    description:
+      "A dense, sliceable bread with no flour, made from soaked red lentils, eggs and psyllium husk. Slice it thin and toast it. Enter your loaf pan size and every amount adjusts.",
+    prepTime: "Soak overnight",
+    cookTime: "50–60 min",
+    servings: "1 loaf in a 9.5 × 5.5 × 3 in pan (scales to your pan)",
+    tags: ["bread", "baking", "lentils", "sandwich"],
+    ingredients: renderIngredients(lentilBreadScaler, lentilBreadScaler.reference),
+    steps: [
+      "Soak the red lentils overnight, then drain and rinse them.",
+      "Preheat the oven to 355°F (about 180°C).",
+      "Blend everything except the baking powder on high until completely smooth. Scrape the sides as you go.",
+      "Let the batter sit for 5 minutes so the psyllium thickens. Then blend in the baking powder for about 5 seconds.",
+      "Oil your loaf pan and line it with parchment paper, leaving an overhang on the long sides.",
+      "Pour in the batter, level the top, and scatter the seeds over it.",
+      "Bake for 50–60 minutes, until a toothpick comes out clean (see the baking note above for your pan). Cool for 10 minutes in the pan, then on a wire rack for at least an hour.",
+      "Chill the loaf overnight before slicing if you can; this should help with gumminess. Slice about ½ inch thick and toast the slices. Toasted slices work well for egg sandwiches.",
+    ],
+    dishScaler: lentilBreadScaler,
+    substitution: lentilBreadSubstitution,
+    notes: [
+      "Eggs were added for lift and a more bread-like crumb. That is why the water is cut from the original video's 1 cup to ¾ cup.",
+      "Whole psyllium husk was added from other lentil bread recipes, not from the video. It adds chew and makes the bread easier to slice.",
+      "Baking powder is 2 tsp instead of the video's 1 tbsp, because the eggs add lift.",
+      "If you only have psyllium husk powder, sources suggest roughly 80–85% of the whole-husk amount, but the ratios vary and this has not been tested here.",
+      "Pan sizes: amounts scale with the pan's volume (length × width × depth), assuming the batter fills the same share of the pan. The common loaf pans are listed as 8.5 × 4.5 and 9 × 5 inches, but sources disagree on their capacity (about 6 and 8 cups), and the 9.5 × 5.5 × 3 in pan this recipe was written for is not a standard size. Baking times for other pans are estimates, so use the toothpick test.",
+      "The original pan gives about 16 slices at ½ inch thick (an estimate).",
+      "This recipe was adapted from a lentil bread video; the video's source was not recorded.",
+    ],
+    references: [
+      {
+        name: "Wheat by the Wayside: psyllium husk conversion",
+        url: "https://wheatbythewayside.com/psyllium-husk-conversion-calculator/",
       },
     ],
   },

@@ -53,6 +53,10 @@ export interface DishScalerConfig {
   ingredients: ScalableIngredient[];
   /** Recipe-specific bake-time wording; falls back to a generic casserole note. */
   bakeNotes?: { same: string; deeper: string; shallower: string };
+  /** What fills the dish, in the summary sentence. Default "casserole". */
+  contentNoun?: string;
+  /** What the yield is counted in ("slices"): "makes about N slices". Default: "serves about N". */
+  yieldNoun?: string;
 }
 
 export interface ScaleFactors {

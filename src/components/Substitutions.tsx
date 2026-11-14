@@ -29,6 +29,11 @@ export default function Substitutions({
               <h3 className="text-sm font-semibold uppercase tracking-wide text-amber-700 dark:text-amber-400">
                 {o.name}
               </h3>
+              {o.replaces && (
+                <p className="text-xs text-stone-500 dark:text-stone-400 leading-snug">
+                  Replaces {o.replaces}
+                </p>
+              )}
               <ul className="mt-1 list-disc pl-5">
                 {renderOption(o, factor).map((line) => (
                   <li key={line}>{line}</li>
