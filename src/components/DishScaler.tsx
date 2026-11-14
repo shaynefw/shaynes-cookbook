@@ -12,8 +12,6 @@ import {
   type DishShape,
 } from "@/lib/dishScaling";
 
-const STORAGE_KEY = "dish-scaler-v1";
-
 interface DishInput {
   presetId: string;
   shape: DishShape;
@@ -50,7 +48,9 @@ export interface DishState {
 }
 
 /** Holds the dish the user typed in; remembers it between visits. */
-export function useDishState(config?: DishScalerConfig): DishState {
+export function useDishState(config?: DishScalerConfig, slug?: string): DishState {
+  // One saved pan per recipe: a loaf pan size must not leak into a casserole.
+  const storageKey = `dish-scaler-v2-${slug ?? "default"}`;
   const fallback: DishDims = config?.reference ?? {
     shape: "rectangle",
     length: 13,
@@ -71,7 +71,7 @@ export function useDishState(config?: DishScalerConfig): DishState {
   useEffect(() => {
     if (!config) return;
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(storageKey);
       if (!raw) return;
       const saved = JSON.parse(raw) as DishInput;
       const shapeOk = ["rectangle", "round", "oval"].includes(saved.shape);
@@ -89,7 +89,7 @@ export function useDishState(config?: DishScalerConfig): DishState {
   function persist(next: DishInput) {
     setInput(next);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      localStorage.setItem(storageKey, JSON.stringify(next));
     } catch {
       /* ignore */
     }
@@ -162,6 +162,10 @@ export default function DishScaler({
     ? scaleFactors(dims, config.reference, config.headroom)
     : null;
   const isRound = input.shape === "round";
+  // Words for the container ("dish" for casseroles, "loaf pan" for bread).
+  const pan = config.panNoun ?? "dish";
+  // Only recipes with a topping or middle layer show a separate topping scale.
+  const hasToppings = config.ingredients.some((i) => i.scaleBy === "area");
 
   return (
     <section
@@ -169,12 +173,12 @@ export default function DishScaler({
       aria-labelledby="dish-scaler-heading"
     >
       <h2 id="dish-scaler-heading" className="font-display text-xl font-semibold mb-1">
-        Fit to your baking dish
+        Fit to your {config.panNoun ?? "baking dish"}
       </h2>
       <p className="text-sm text-stone-500 dark:text-stone-400 mb-4 leading-snug">
-        Pick your dish or type its size. The ingredient amounts below update to
+        Pick your {pan} or type its size. The ingredient amounts below update to
         fill it. Measure inside the rim, and depth from the bottom to the rim.
-        A square dish is just a rectangle with equal length and width.
+        A square {pan} is just a rectangle with equal length and width.
       </p>
 
       <div>
@@ -182,7 +186,7 @@ export default function DishScaler({
           htmlFor="dish-preset"
           className="block text-sm text-stone-600 dark:text-stone-400 mb-1"
         >
-          Dish
+          {pan.charAt(0).toUpperCase() + pan.slice(1)}
         </label>
         <select
           id="dish-preset"
@@ -257,25 +261,41 @@ export default function DishScaler({
         {f ? (
           <>
             <p className="text-stone-700 dark:text-stone-300 leading-relaxed">
-              Your dish holds about{" "}
+              {config.headroom > 0 ? (
+                <>
+                  Your {pan} holds about{" "}
+                  <strong className="font-semibold">
+                    {formatCups(f.cups)} cups
+                  </strong>{" "}
+                  of {config.contentNoun ?? "casserole"}
+                  {` (leaving ${config.headroom}″ below the rim)`} and{" "}
+                </>
+              ) : (
+                <>Your {pan} </>
+              )}
+              {config.yieldNoun ? "makes" : "serves"} about{" "}
               <strong className="font-semibold">
-                {formatCups(f.cups)} cups
-              </strong>{" "}
-              of {config.contentNoun ?? "casserole"}
-              {config.headroom > 0
-                ? ` (leaving ${config.headroom}″ below the rim)`
-                : ""}{" "}
-              and {config.yieldNoun ? "makes" : "serves"} about{" "}
-              <strong className="font-semibold">
-                {estimateServings(config, f.volume)}
+                {estimateServings(
+                  config,
+                  config.yieldBy === "length" && dims.shape === "rectangle"
+                    ? dims.length / config.reference.length
+                    : f.volume
+                )}
               </strong>
               {config.yieldNoun ? ` ${config.yieldNoun}` : ""}
-              . The filling is scaled ×{f.volume.toFixed(2)} and the toppings ×
-              {f.area.toFixed(2)} compared with the original{" "}
+              {hasToppings ? (
+                <>
+                  . The filling is scaled ×{f.volume.toFixed(2)} and the toppings ×
+                  {f.area.toFixed(2)}
+                </>
+              ) : (
+                <>. Every amount is scaled ×{f.volume.toFixed(2)}</>
+              )}{" "}
+              compared with the original{" "}
               {config.reference.shape === "round"
                 ? `${config.reference.length}″ round`
                 : `${config.reference.length}″ × ${config.reference.width}″`}{" "}
-              dish.
+              {pan}.
             </p>
             <p className="mt-2 text-amber-800 dark:text-amber-300 leading-relaxed">
               <strong className="font-semibold">Baking note:</strong>{" "}

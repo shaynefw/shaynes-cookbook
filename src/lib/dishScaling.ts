@@ -57,6 +57,10 @@ export interface DishScalerConfig {
   contentNoun?: string;
   /** What the yield is counted in ("slices"): "makes about N slices". Default: "serves about N". */
   yieldNoun?: string;
+  /** What the container is called ("loaf pan"). Default: "baking dish" / "dish". */
+  panNoun?: string;
+  /** Count the yield by pan length (slices of a loaf) instead of volume. */
+  yieldBy?: "length";
 }
 
 export interface ScaleFactors {

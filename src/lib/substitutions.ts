@@ -2,7 +2,7 @@ import { formatIngredient, type ScalableIngredient } from "@/lib/dishScaling";
 
 export interface SubstitutionOption {
   name: string;
-  /** What this option stands in for, e.g. "Replaces the baking powder". */
+  /** What this option stands in for, shown after "Replaces", e.g. "the baking powder". */
   replaces?: string;
   /** What you need instead, for the recipe's reference amount. */
   parts: ScalableIngredient[];

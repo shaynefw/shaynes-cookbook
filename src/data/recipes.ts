@@ -426,7 +426,7 @@ const lentilBreadSubstitution: IngredientSubstitution = {
   options: [
     {
       name: "No baking powder",
-      replaces: "the 2 tsp of baking powder",
+      replaces: "the baking powder",
       parts: [
         { amount: 1, unit: "tsp", name: "baking soda", smart: true, scaleBy: "volume" },
         { amount: 1, unit: "tbsp", name: "lemon juice or cider vinegar", smart: true, scaleBy: "volume" },
@@ -434,7 +434,7 @@ const lentilBreadSubstitution: IngredientSubstitution = {
     },
     {
       name: "Softer crumb",
-      replaces: "¼ cup of the ¾ cup of water",
+      replaces: "the water",
       parts: [
         { amount: 0.25, unit: "cup", name: "Greek yogurt", smart: true, scaleBy: "volume" },
         { amount: 0.5, unit: "cup", name: "water", smart: true, scaleBy: "volume" },
@@ -442,8 +442,6 @@ const lentilBreadSubstitution: IngredientSubstitution = {
       note: "Use these in place of the full amount of water.",
     },
   ],
-  caution:
-    "Add the baking soda mixture the same way as the baking powder, at the end, with the quick 5 second blend.",
 };
 
 // Reference pan: 9.5 x 5.5 x 3 in. Headroom is 0 because the batter fills the
@@ -452,7 +450,9 @@ const lentilBreadScaler: DishScalerConfig = {
   reference: { shape: "rectangle", length: 9.5, width: 5.5, depth: 3 },
   referenceServings: 16,
   yieldNoun: "slices",
+  yieldBy: "length",
   contentNoun: "batter",
+  panNoun: "loaf pan",
   headroom: 0,
   defaultPresetId: "original",
   presets: [
@@ -475,9 +475,9 @@ const lentilBreadScaler: DishScalerConfig = {
   bakeNotes: {
     same: "Your batter will be about as deep as in the original pan, so bake 50–60 minutes at 355°F (about 180°C), until a toothpick comes out clean.",
     deeper:
-      "Your batter will be deeper than in the original pan, so it may need 10–20 minutes longer. Start testing with a toothpick at about 55 minutes. If the top browns too fast, cover it loosely with foil.",
+      "Your batter will be deeper than in the original pan, so it may need 10–20 minutes longer (an estimate). Start testing with a toothpick at about 55 minutes. If the top browns too fast, cover it loosely with foil.",
     shallower:
-      "Your batter will be shallower than in the original pan, so start testing with a toothpick at about 40 minutes.",
+      "Your batter will be shallower than in the original pan, so start testing with a toothpick at about 40 minutes (an estimate).",
   },
   ingredients: [
     {
@@ -489,7 +489,14 @@ const lentilBreadScaler: DishScalerConfig = {
       scaleBy: "volume",
     },
     { amount: 3, unit: "each", name: "large egg", plural: "large eggs", scaleBy: "volume" },
-    { amount: 0.75, unit: "cup", name: "water", smart: true, scaleBy: "volume" },
+    {
+      amount: 0.75,
+      unit: "cup",
+      name: "water",
+      smart: true,
+      metric: { perUnit: 250, unit: "mL" },
+      scaleBy: "volume",
+    },
     { amount: 2, unit: "tbsp", name: "olive oil", smart: true, scaleBy: "volume" },
     { amount: 1, unit: "tsp", name: "salt", smart: true, scaleBy: "volume" },
     { amount: 3, unit: "tbsp", name: "whole psyllium husk", smart: true, scaleBy: "volume" },
@@ -927,7 +934,7 @@ const baseRecipes: Recipe[] = [
     slug: "lentil-bread",
     title: "Lentil Bread",
     description:
-      "A dense, sliceable bread with no flour, made from soaked red lentils, eggs and psyllium husk. Slice it thin and toast it. Enter your loaf pan size and every amount adjusts.",
+      "A bread with no flour, made from soaked red lentils, eggs and psyllium husk. Slice it about ½ inch thick and toast it. Enter your loaf pan size and every amount adjusts.",
     prepTime: "Soak overnight",
     cookTime: "50–60 min",
     servings: "1 loaf in a 9.5 × 5.5 × 3 in pan (scales to your pan)",
@@ -949,9 +956,9 @@ const baseRecipes: Recipe[] = [
       "Eggs were added for lift and a more bread-like crumb. That is why the water is cut from the original video's 1 cup to ¾ cup.",
       "Whole psyllium husk was added from other lentil bread recipes, not from the video. It adds chew and makes the bread easier to slice.",
       "Baking powder is 2 tsp instead of the video's 1 tbsp, because the eggs add lift.",
-      "If you only have psyllium husk powder, sources suggest roughly 80–85% of the whole-husk amount, but the ratios vary and this has not been tested here.",
-      "Pan sizes: amounts scale with the pan's volume (length × width × depth), assuming the batter fills the same share of the pan. The common loaf pans are listed as 8.5 × 4.5 and 9 × 5 inches, but sources disagree on their capacity (about 6 and 8 cups), and the 9.5 × 5.5 × 3 in pan this recipe was written for is not a standard size. Baking times for other pans are estimates, so use the toothpick test.",
-      "The original pan gives about 16 slices at ½ inch thick (an estimate).",
+      "Psyllium husk powder is finer than whole husk, so recipes generally use less of it. The exact amount varies by source. This recipe uses whole husk, and powder has not been tested here.",
+      "Pan sizes: amounts scale with the pan's volume (length × width × depth), assuming the batter fills the same share of the pan. The two most common loaf pans are usually listed as 8.5 × 4.5 and 9 × 5 inches. Sources disagree on their exact capacity, and the 9.5 × 5.5 × 3 in pan this recipe was written for was not found in standard size lists. The baking times for other pans are estimates, so use the toothpick test.",
+      "The original pan gives about 16 slices at ½ inch thick. This is an estimate: 9.5 inches at ½ inch is 19, less the end pieces. Other pans are counted by their length.",
       "This recipe was adapted from a lentil bread video; the video's source was not recorded.",
     ],
     references: [

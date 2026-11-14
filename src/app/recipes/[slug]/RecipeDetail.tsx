@@ -44,7 +44,7 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
   const hasVariations = recipe.variations && recipe.variations.length > 0;
   const [selectedVariation, setSelectedVariation] = useState(-1); // -1 = main recipe
 
-  const dish = useDishState(recipe.dishScaler);
+  const dish = useDishState(recipe.dishScaler, recipe.slug);
   const scaler = recipe.dishScaler;
   const scaledIngredients =
     scaler && isValidDish(dish.dims, scaler.headroom)
@@ -150,12 +150,18 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
   const shoppingVariation =
     activeVariation?.name ?? (amountCfg?.riceTypes ? amount.input.typeId : undefined);
 
+  // Scale factors from the chosen pan or dish (undefined when there is none, or it is invalid).
+  const dishFactors =
+    scaler && isValidDish(dish.dims, scaler.headroom)
+      ? scaleFactors(dish.dims, scaler.reference, scaler.headroom)
+      : undefined;
+
   const shoppingRows = recipe.shopping
     ? resolveShopping(recipe.shopping, {
         variation: shoppingVariation,
         factors:
-          scaler && isValidDish(dish.dims, scaler.headroom)
-            ? scaleFactors(dish.dims, scaler.reference, scaler.headroom)
+          dishFactors
+            ? dishFactors
             : amountCfg && amount.valid
               ? (() => {
                   const f = amountFactor(amountCfg, amount.value, amount.input.cupId);
@@ -354,9 +360,11 @@ export default function RecipeDetail({ recipe }: { recipe: Recipe }) {
         <Substitutions
           data={recipe.substitution}
           factor={
-            amountCfg && amount.valid
-              ? amountFactor(amountCfg, amount.value, amount.input.cupId)
-              : 1
+            dishFactors
+              ? dishFactors.volume
+              : amountCfg && amount.valid
+                ? amountFactor(amountCfg, amount.value, amount.input.cupId)
+                : 1
           }
         />
       )}
