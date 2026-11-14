@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Geist } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PwaRegister from "@/components/PwaRegister";
 import { SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
 
 const geistSans = Geist({
@@ -20,6 +21,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: SITE_NAME,
   description: SITE_TAGLINE,
+  applicationName: SITE_NAME,
+  appleWebApp: {
+    capable: true,
+    title: "Shayne's Cookbook",
+    statusBarStyle: "default",
+  },
+  // Next only writes the newer mobile-web-app-capable tag; older iOS wants this one.
+  other: { "apple-mobile-web-app-capable": "yes" },
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
@@ -31,6 +40,13 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: SITE_TAGLINE,
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#e8e4e0" },
+    { media: "(prefers-color-scheme: dark)", color: "#3d3425" },
+  ],
 };
 
 export default function RootLayout({
@@ -59,6 +75,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <PwaRegister />
       </body>
     </html>
   );

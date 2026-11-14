@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandMark } from "@/lib/brand";
+import IosInstallHint from "./IosInstallHint";
 
 export default function Footer() {
   return (
@@ -12,6 +13,9 @@ export default function Footer() {
           </span>
         </Link>
         <p>A personal collection of family favorite recipes.</p>
+      </div>
+      <div className="max-w-5xl mx-auto px-4 pb-8 empty:hidden">
+        <IosInstallHint />
       </div>
     </footer>
   );

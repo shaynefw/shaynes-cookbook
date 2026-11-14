@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
 import TextSizeToggle from "./TextSizeToggle";
+import InstallButton from "./InstallButton";
 import { BrandMark } from "@/lib/brand";
 
 export default function Header() {
@@ -23,6 +24,7 @@ export default function Header() {
           </span>
         </Link>
         <div className="flex items-center gap-1">
+          <InstallButton />
           <TextSizeToggle />
           <ThemeToggle />
         </div>
