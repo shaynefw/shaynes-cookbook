@@ -856,7 +856,7 @@ const lentilBread: ShoppingItem[] = [
   {
     name: "Instant-read thermometer",
     aisle: "Other",
-    buy: "1 (a kitchen tool)",
+    buy: "1, if you do not have one",
     uses: "to check that the center reaches 205–210°F",
     pantry: true,
   },

@@ -285,7 +285,8 @@ export default function DishScaler({
               {config.yieldNoun ? ` ${config.yieldNoun}` : ""}
               {hasToppings ? (
                 <>
-                  . The filling is scaled ×{f.volume.toFixed(2)} and the toppings ×
+                  . The {config.scaleWords?.volume ?? "filling"} is scaled ×
+                  {f.volume.toFixed(2)} and the {config.scaleWords?.area ?? "toppings"} ×
                   {f.area.toFixed(2)}
                 </>
               ) : (

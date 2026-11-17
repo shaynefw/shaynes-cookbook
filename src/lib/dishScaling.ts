@@ -61,6 +61,8 @@ export interface DishScalerConfig {
   panNoun?: string;
   /** Count the yield by pan length (slices of a loaf) instead of volume. */
   yieldBy?: "length";
+  /** Names for the two scale factors in the summary. Default: filling / toppings. */
+  scaleWords?: { volume: string; area: string };
 }
 
 export interface ScaleFactors {

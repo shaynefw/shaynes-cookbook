@@ -428,6 +428,7 @@ const lentilBreadScaler: DishScalerConfig = {
   yieldBy: "length",
   contentNoun: "batter",
   panNoun: "loaf pan",
+  scaleWords: { volume: "batter", area: "seeds and pan oil" },
   headroom: 0,
   defaultPresetId: "original",
   presets: [
@@ -495,7 +496,7 @@ const lentilBreadScaler: DishScalerConfig = {
       amount: 0,
       unit: "tsp",
       name: "",
-      text: "parchment paper, to line the pan (leave an overhang on the long sides)",
+      text: "parchment paper, to line the pan (leave an overhang)",
       scaleBy: "volume",
     },
   ],
@@ -943,7 +944,7 @@ const baseRecipes: Recipe[] = [
     notes: [
       "Work in progress: this recipe is still being tested, so amounts and times may change.",
       "Pan sizes: amounts scale with the pan's volume (length × width × depth), assuming the batter fills the same share of the pan. The two most common loaf pans are usually listed as 8.5 × 4.5 and 9 × 5 inches. Sources disagree on their exact capacity, and the 9.5 × 5.5 × 3 in pan this recipe was written for was not found in standard size lists. The baking times for other pans are estimates, so check the temperature of the center.",
-      "The original pan gives about 16 slices at ½ inch thick. This is an estimate: 9.5 inches at ½ inch is 19, less the end pieces. Other pans are counted by their length.",
+      "The slice count assumes slices about ½ inch thick. The original pan gives about 16 slices. This is an estimate: 9.5 inches at ½ inch is 19, less the end pieces. Other pans are counted by their length.",
     ],
   },
 ];
