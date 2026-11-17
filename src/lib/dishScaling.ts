@@ -203,6 +203,10 @@ function spoonForm(t: number): string {
     tbsp += 1;
     rest = 0;
   }
+  // A clean half tablespoon (4.5, 6, 7.5 ... tsp) reads best as "1½ tbsp".
+  if (q >= 3 && Math.abs(q / 1.5 - Math.round(q / 1.5)) < 1e-9) {
+    return `${snap(q / 3, HALF_FRACTIONS)} tbsp`;
+  }
   const parts: string[] = [];
   if (tbsp > 0) parts.push(`${tbsp} tbsp`);
   if (rest > 0) parts.push(`${snap(rest, EIGHTH_FRACTIONS)} tsp`);
