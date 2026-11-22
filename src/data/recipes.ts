@@ -1,7 +1,7 @@
 import { renderIngredients } from "@/lib/dishScaling";
 import type { DishScalerConfig } from "@/lib/dishScaling";
-import { renderAmountIngredients } from "@/lib/amountScaling";
-import type { AmountScalerConfig } from "@/lib/amountScaling";
+import { ML_PER_OZ, renderAmountIngredients } from "@/lib/amountScaling";
+import type { AmountScalerConfig, CupOption } from "@/lib/amountScaling";
 import type { IngredientSubstitution } from "@/lib/substitutions";
 import type { ShoppingItem } from "@/lib/shopping";
 import { shoppingLists } from "@/data/shopping";
@@ -416,6 +416,58 @@ const gingerGarlicTeaScaler: AmountScalerConfig = {
       smart: true,
       scaleBy: "volume",
     },
+  ],
+};
+
+// Written for 1 cup (8 oz) of water. Every amount is linear in the cup size, so the
+// factor is exactly oz / 8 (ml = oz x 29.5735 makes the picker and the maths agree).
+// Starbucks names are used only for Short 8, Tall 12, Grande 16 and Venti hot 20 oz.
+function cupSize(id: string, oz: number, group: string, name?: string, asWritten?: boolean): CupOption {
+  const mL = Math.round((oz * ML_PER_OZ) / 5) * 5;
+  const label = `${name ? `${name}, ` : ""}${oz} oz (${mL} mL)${asWritten ? ", as written" : ""}`;
+  return { id, label, noun: "cup", ml: oz * ML_PER_OZ, group };
+}
+
+const SHOP_SIZES = "Coffee shop sizes";
+const MUG_SIZES = "Travel mug sizes";
+
+const bulletproofCoffeeScaler: AmountScalerConfig = {
+  title: "Scale by cup size",
+  intro: "Pick your cup or mug and how many drinks you are making. The amounts below adjust.",
+  inputLabel: "Number of drinks",
+  unitNoun: { singular: "drink", plural: "drinks" },
+  cupLabel: "Cup or mug size",
+  sizeSummary: { referenceLabel: "1 cup (8 oz)", contents: "of water" },
+  reference: 1,
+  defaultAmount: 1,
+  referenceCupId: "shop-8",
+  defaultCupId: "shop-8",
+  cupOptions: [
+    cupSize("shop-8", 8, SHOP_SIZES, "Short", true),
+    cupSize("shop-10", 10, SHOP_SIZES),
+    cupSize("shop-12", 12, SHOP_SIZES, "Tall"),
+    cupSize("shop-14", 14, SHOP_SIZES),
+    cupSize("shop-16", 16, SHOP_SIZES, "Grande"),
+    cupSize("shop-20", 20, SHOP_SIZES, "Venti (hot)"),
+    cupSize("shop-24", 24, SHOP_SIZES, "Extra large (Tim Hortons)"),
+    cupSize("mug-12", 12, MUG_SIZES, "Travel mug"),
+    cupSize("mug-16", 16, MUG_SIZES, "Travel mug"),
+    cupSize("mug-20", 20, MUG_SIZES, "Travel mug"),
+    cupSize("mug-24", 24, MUG_SIZES, "Travel mug"),
+    cupSize("mug-30", 30, MUG_SIZES, "Travel mug"),
+  ],
+  ingredients: [
+    {
+      amount: 1,
+      unit: "cup",
+      name: "water",
+      smart: true,
+      metric: { perUnit: 8, unit: "oz" },
+      scaleBy: "volume",
+    },
+    { amount: 2.5, unit: "tbsp", name: "ground coffee", smart: true, fine: true, scaleBy: "volume" },
+    { amount: 1, unit: "tsp", name: "C8 oil", smart: true, fine: true, scaleBy: "volume" },
+    { amount: 1, unit: "tbsp", name: "ghee", smart: true, fine: true, scaleBy: "volume" },
   ],
 };
 
@@ -945,6 +997,49 @@ const baseRecipes: Recipe[] = [
       "Work in progress: this recipe is still being tested, so amounts and times may change.",
       "Pan sizes: amounts scale with the pan's volume (length × width × depth), assuming the batter fills the same share of the pan. The two most common loaf pans are usually listed as 8.5 × 4.5 and 9 × 5 inches. Sources disagree on their exact capacity, and the 9.5 × 5.5 × 3 in pan this recipe was written for was not found in standard size lists. The baking times for other pans are estimates, so check the temperature of the center.",
       "The slice count assumes slices about ½ inch thick. The original pan gives about 16 slices. This is an estimate: 9.5 inches at ½ inch is 19, less the end pieces. Other pans are counted by their length.",
+    ],
+  },
+  {
+    slug: "bulletproof-coffee",
+    title: "Bulletproof Coffee",
+    description:
+      "Brewed coffee blended with C8 oil and ghee until it looks like a latte. Pick your cup or mug size and every amount adjusts.",
+    prepTime: "5 min",
+    cookTime: "4 min steep",
+    servings: "1 cup (8 oz) as written (scales to your cup size)",
+    tags: ["drink", "coffee", "breakfast"],
+    ingredients: renderAmountIngredients(bulletproofCoffeeScaler, 1, "shop-8"),
+    steps: [
+      "Boil the water, then let it sit about 30 seconds so it is just off the boil.",
+      "Put the ground coffee in a mug and pour the hot water over it.",
+      "Wait 4 minutes.",
+      "Strain the coffee through a fine sieve or paper filter into the blender.",
+      "Add the C8 oil and ghee.",
+      "Hold the lid down firmly with a towel, since hot liquid can pop it. Blend for at least 20 seconds, until it looks like a latte.",
+      "Pour it into a mug and drink it, on an empty stomach if you can.",
+    ],
+    amountScaler: bulletproofCoffeeScaler,
+    notes: [
+      "Sizes are the cup's labeled capacity. This recipe puts that full amount of water in the cup. The oil, ghee and froth add volume, so a cup filled to the label may be very full. For a lid with room to sip, pick the next size down. This is an estimate, not a measured result.",
+      "Starbucks hot cup sizes are Short 8 oz, Tall 12 oz, Grande 16 oz and Venti 20 oz (Starbucks, as reported by 10TV VERIFY). Tim Hortons extra large is 710 mL, which is about 24 oz (Global News). Its other cup sizes and names have changed over the years, so read the size on your cup. Travel mugs are commonly 12, 16, 20, 24 and 30 oz, but check the label on your mug.",
+      "C8 oil can upset the stomach in some people, more so in larger amounts (seller guides say to start with about 1 tsp). Bigger cups use more oil, so start with the 8 oz size.",
+      "Blender: start on low speed, keep the lid on, and do not fill the jar to its maximum capacity (the Vitamix 5200 manual says all three). For the big sizes, two batches may be safer (my estimate). Read your own blender's manual, especially about how to hold the lid.",
+      "The original author is not known. The amounts are used as given. The wording of step 1 was tidied.",
+    ],
+    references: [
+      {
+        name: "10TV VERIFY: Starbucks hot cup sizes",
+        url: "https://www.10tv.com/article/news/verify/food-verify/starbucks-coffee-hot-cup-sizes-liquid-volume-amount-facebook-tiktok-claim-fact-check/536-0903b036-e0c9-4cca-b660-22db2b113a90",
+      },
+      {
+        name: "Global News: Tim Hortons 710 mL cup takes over the extra large name",
+        url: "https://globalnews.ca/news/199996/new-cup-size-coming-to-tim-hortons-710-ml-takes-over-extra-large-name-jan-23",
+      },
+      { name: "YETI: travel mug sizes", url: "https://www.yeti.com/en_US/mugs" },
+      {
+        name: "Vitamix owner's manual (hot liquids)",
+        url: "https://www.vitamix.com/content/dam/vitamix/files/limited-warranty-manuals/154276_5200_Owners_Manual.pdf",
+      },
     ],
   },
 ];

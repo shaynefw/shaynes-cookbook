@@ -7,6 +7,9 @@ import {
 /** Standard US measuring cup, in mL. */
 export const STANDARD_CUP_ML = 240;
 
+/** Millilitres in one US fluid ounce (so a cup of 8 oz is 236.588 mL). */
+export const ML_PER_OZ = 29.5735;
+
 export interface CupOption {
   id: string;
   /** Shown in the picker, e.g. "Rice-cooker cup (180 mL)". */
@@ -14,6 +17,8 @@ export interface CupOption {
   /** Used in sentences: "rice-cooker cup" / "cup". */
   noun: string;
   ml: number;
+  /** Optional heading in the picker (an <optgroup>), e.g. "Coffee shop sizes". */
+  group?: string;
 }
 
 /** A kind of rice (or other main ingredient) with its own tested water ratio. */
@@ -54,6 +59,14 @@ export interface AmountScalerConfig {
   perUnit?: { ml: number; label: string };
   /** Optional cup picker (rice). Leave out when there is only one sensible size. */
   cupOptions?: CupOption[];
+  /** Label for the cup picker. Default: "Which cup?". */
+  cupLabel?: string;
+  /**
+   * Replaces the rice summary under the cup picker with a size sentence:
+   * "2 drinks × 16 oz = 32 oz of water. Amounts are ×4 compared with the
+   * 1 cup (8 oz) recipe." Needs `cupOptions` and `unitNoun`.
+   */
+  sizeSummary?: { referenceLabel: string; contents: string };
   /** The cup the original recipe is assumed to use. */
   referenceCupId?: string;
   defaultCupId?: string;
@@ -77,6 +90,35 @@ export function typeOf(config: AmountScalerConfig, id?: string): RiceType | unde
 
 export function hasCups(config: AmountScalerConfig): boolean {
   return !!config.cupOptions && config.cupOptions.length > 0;
+}
+
+/** The picker options in order, split into <optgroup> sections (a segment with no group is plain). */
+export function cupGroups(config: AmountScalerConfig): { group?: string; options: CupOption[] }[] {
+  const segments: { group?: string; options: CupOption[] }[] = [];
+  for (const c of config.cupOptions ?? []) {
+    let seg = segments.find((s) => s.group === c.group);
+    if (!seg) {
+      seg = { group: c.group, options: [] };
+      segments.push(seg);
+    }
+    seg.options.push(c);
+  }
+  return segments;
+}
+
+/** Size of a cup in US fluid ounces. */
+export function cupOz(cup: CupOption): number {
+  return cup.ml / ML_PER_OZ;
+}
+
+/** "32", "12.5": ounces to one decimal, without a trailing ".0". */
+export function formatOz(oz: number): string {
+  return String(Math.round(oz * 10) / 10);
+}
+
+/** "4", "1.25", "3.75": a scale factor to two decimals, without trailing zeros. */
+export function formatFactor(f: number): string {
+  return String(Math.round(f * 100) / 100);
 }
 
 export function cupOf(config: AmountScalerConfig, id: string): CupOption | undefined {

@@ -3,7 +3,11 @@
 import { useEffect, useState } from "react";
 import {
   amountFactor,
+  cupGroups,
   cupOf,
+  cupOz,
+  formatFactor,
+  formatOz,
   hasCups,
   hasTypes,
   riceMl,
@@ -162,7 +166,7 @@ export default function AmountScaler({
               htmlFor="amount-cup"
               className="block text-sm text-stone-600 dark:text-stone-400 mb-1"
             >
-              Which cup?
+              {config.cupLabel ?? "Which cup?"}
             </label>
             <select
               id="amount-cup"
@@ -170,11 +174,23 @@ export default function AmountScaler({
               onChange={(e) => state.setCup(e.target.value)}
               className={fieldClass}
             >
-              {(config.cupOptions ?? []).map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.label}
-                </option>
-              ))}
+              {cupGroups(config).map((seg) =>
+                seg.group ? (
+                  <optgroup key={seg.group} label={seg.group}>
+                    {seg.options.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                ) : (
+                  seg.options.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.label}
+                    </option>
+                  ))
+                )
+              )}
             </select>
           </div>
         )}
@@ -191,7 +207,24 @@ export default function AmountScaler({
 
       <div className="mt-4 text-sm" aria-live="polite">
         {state.valid ? (
-          cups ? (
+          cups && config.sizeSummary && cup ? (
+            <p className="text-stone-700 dark:text-stone-300 leading-relaxed">
+              <strong className="font-semibold">
+                {formatFactor(state.value)} {noun} × {formatOz(cupOz(cup))} oz ={" "}
+                {formatOz(state.value * cupOz(cup))} oz
+              </strong>{" "}
+              {config.sizeSummary.contents}.{" "}
+              {Math.abs(factor - 1) < 0.005 ? (
+                <>Amounts match the {config.sizeSummary.referenceLabel} recipe.</>
+              ) : (
+                <>
+                  Amounts are{" "}
+                  <strong className="font-semibold">×{formatFactor(factor)}</strong> compared
+                  with the {config.sizeSummary.referenceLabel} recipe.
+                </>
+              )}
+            </p>
+          ) : cups ? (
             <p className="text-stone-700 dark:text-stone-300 leading-relaxed">
               That is about <strong className="font-semibold">{Math.round(ml)} mL</strong> of dry
               rice ({formatCount(ml / 240)} standard cups). Everything below is scaled{" "}

@@ -884,6 +884,73 @@ const lentilBread: ShoppingItem[] = [
   },
 ];
 
+// Bulletproof coffee. Pack sizes below are rough guesses, not checked against any
+// brand or store; the shopping-list intro already says "pack sizes vary".
+//   ground coffee: 340 g / 12 oz bag, about 68 tbsp (guessing about 5 g per tbsp)
+//   C8 oil: 473 mL / 16 oz bottle, about 96 tsp
+//   ghee: 212 g / 7.5 oz jar, about 15 tbsp (guessing about 14 g per tbsp)
+// Amounts are per 1 cup (8 oz) and scale with the cup size and drink count.
+const bulletproofCoffee: ShoppingItem[] = [
+  {
+    name: "Ground coffee",
+    aisle: "Other",
+    pack: {
+      label: "bag of ground coffee (about 340 g / 12 oz)",
+      plural: "bags of ground coffee (about 340 g / 12 oz each)",
+      size: 68,
+      unit: "tbsp",
+      needed: [{ amount: 2.5, scaleBy: "volume" }],
+    },
+    usesScaled: { needed: [{ amount: 2.5, scaleBy: "volume" }], unit: "tbsp", smart: true, fine: true },
+  },
+  {
+    name: "C8 oil",
+    aisle: "Other",
+    pack: {
+      label: "bottle of C8 oil (about 473 mL / 16 oz)",
+      plural: "bottles of C8 oil (about 473 mL / 16 oz each)",
+      size: 96,
+      unit: "tsp",
+      needed: [{ amount: 1, scaleBy: "volume" }],
+    },
+    usesScaled: { needed: [{ amount: 1, scaleBy: "volume" }], unit: "tsp", smart: true, fine: true },
+    note: "Can upset the stomach in some people. Start with a small cup.",
+  },
+  {
+    name: "Ghee",
+    aisle: "Dairy & eggs",
+    pack: {
+      label: "jar of ghee (about 212 g / 7.5 oz)",
+      plural: "jars of ghee (about 212 g / 7.5 oz each)",
+      size: 15,
+      unit: "tbsp",
+      needed: [{ amount: 1, scaleBy: "volume" }],
+    },
+    usesScaled: { needed: [{ amount: 1, scaleBy: "volume" }], unit: "tbsp", smart: true, fine: true },
+  },
+  {
+    name: "Fine sieve or paper filter",
+    aisle: "Other",
+    buy: "1, if you do not have one",
+    uses: "to strain the coffee",
+    pantry: true,
+  },
+  {
+    name: "Blender",
+    aisle: "Other",
+    buy: "1, if you do not have one",
+    uses: "to blend the drink; the jar must not be filled to its maximum capacity",
+    pantry: true,
+  },
+  {
+    name: "Water",
+    aisle: "Other",
+    buy: "From the tap",
+    usesScaled: { needed: [{ amount: 1, scaleBy: "volume" }], unit: "cup", smart: true },
+    pantry: true,
+  },
+];
+
 export const shoppingLists: Record<string, ShoppingItem[]> = {
   "maple-walnut-banana-bread": bananaBread,
   "okinawan-lentil-sweet-potato-stew": okinawanStew,
@@ -895,4 +962,5 @@ export const shoppingLists: Record<string, ShoppingItem[]> = {
   "kimchi-spam-rice-cooker-rice": kimchiSpamRice,
   "garlic-ginger-honey-tea": garlicGingerTea,
   "lentil-bread": lentilBread,
+  "bulletproof-coffee": bulletproofCoffee,
 };

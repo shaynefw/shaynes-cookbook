@@ -33,8 +33,14 @@ export interface ScalableIngredient {
   text?: string;
   /** Show cups / spoons the way a cook would measure them (1⅔ cups, ½ cup + 1 tbsp). */
   smart?: boolean;
-  /** Adds "(about 250 g)" or "(about 375 mL)", scaled with the amount. */
-  metric?: { perUnit: number; unit: "g" | "mL" | "cm" };
+  /** With `smart`: do not round to a cup fraction within 1½ tsp; stay within 3%. */
+  fine?: boolean;
+  /**
+   * Adds "(about 250 g)" or "(about 375 mL)", scaled with the amount.
+   * "oz" is a fluid-ounce hint (nearest ½ oz) for smart volume lines, shown right after the
+   * amount with no "about": "1½ cups (12 oz) water".
+   */
+  metric?: { perUnit: number; unit: "g" | "mL" | "cm" | "oz" };
   /** Lets a rice type override this ingredient's amount (e.g. "water"). */
   key?: string;
   /** Name to use when the amount isn't 1 (whole items): "garlic cloves". */
@@ -220,11 +226,12 @@ function spoonForm(t: number): string {
  * a plain cup fraction (1⅔ cups) when it fits, spoons for small amounts
  * (6 tbsp, 1 tbsp + 1 tsp), otherwise cups plus spoons (1½ cups + 1 tbsp).
  */
-export function formatKitchenVolume(tsp: number): string {
+export function formatKitchenVolume(tsp: number, fine = false): string {
   if (tsp <= 0) return "0 tsp";
   if (tsp < 12) return spoonForm(tsp);
 
-  const tol = Math.max(1.5, tsp * 0.03);
+  // `fine` (small, strength-sensitive amounts) skips the coarse snap to a cup fraction.
+  const tol = fine ? tsp * 0.03 : Math.max(1.5, tsp * 0.03);
   const whole = Math.floor(tsp / 48);
   let best = { f: 0, err: Infinity };
   for (const f of CUP_FRACTIONS) {
@@ -278,8 +285,10 @@ export function formatIngredient(ing: ScalableIngredient, factor: number): strin
     const volume =
       ing.amountMax !== undefined
         ? formatVolumeRange(toTsp(amount, ing.unit), toTsp(ing.amountMax * factor, ing.unit))
-        : formatKitchenVolume(toTsp(amount, ing.unit));
-    line = `${volume} ${ing.name}`;
+        : formatKitchenVolume(toTsp(amount, ing.unit), ing.fine);
+    const inlineOz =
+      ing.metric?.unit === "oz" ? ` (${snap(amount * ing.metric.perUnit, HALF_FRACTIONS)} oz)` : "";
+    line = `${volume}${inlineOz} ${ing.name}`;
   } else if (ing.unit === "inch") {
     line = `${snap(amount, QUARTER_FRACTIONS)}-inch ${ing.name}`;
   } else {
@@ -288,7 +297,7 @@ export function formatIngredient(ing: ScalableIngredient, factor: number): strin
     line = [q.text, q.unit, name].filter(Boolean).join(" ");
   }
   if (ing.note) line += `, ${ing.note}`;
-  if (ing.metric) {
+  if (ing.metric && ing.metric.unit !== "oz") {
     const raw = amount * ing.metric.perUnit;
     const v = ing.metric.unit === "cm" ? Math.round(raw * 2) / 2 : Math.round(raw / 5) * 5;
     line += ` (about ${v} ${ing.metric.unit})`;

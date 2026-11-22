@@ -49,6 +49,7 @@ const KEYS = Object.keys(PALETTES);
 const BY_TAG: [string[], string][] = [
   [["spicy", "caribbean"], "rose"],
   [["vegan", "vegetarian", "healthy"], "emerald"],
+  [["coffee"], "amber"],
   [["drink", "hydration"], "teal"],
   [["baking", "breakfast"], "amber"],
   [["casserole", "rice cooker", "one-pot", "stew"], "orange"],

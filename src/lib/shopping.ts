@@ -70,6 +70,8 @@ export interface ShoppingItem {
     unit: IngredientUnit;
     /** Show as cups / spoons (1⅔ cups, ½ cup + 1 tbsp). */
     smart?: boolean;
+    /** With `smart`: stay within 3% instead of snapping to a cup fraction. */
+    fine?: boolean;
     /** Show a range: the top end is the low end times this ("1–2 tsp" = 2). */
     rangeFactor?: number;
   };
@@ -139,7 +141,7 @@ export function resolveShopping(
         item.usesScaled.smart && isVolume
           ? item.usesScaled.rangeFactor
             ? formatVolumeRange(toTsp(total, u), toTsp(total * item.usesScaled.rangeFactor, u))
-            : formatKitchenVolume(toTsp(total, u))
+            : formatKitchenVolume(toTsp(total, u), item.usesScaled.fine)
           : formatAmount(total, u);
     }
 
